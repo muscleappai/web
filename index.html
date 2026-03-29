@@ -234,13 +234,15 @@
     .phone-mockup {
       position: relative; z-index: 2;
       width: 260px;
-      background: #0a0a0a;
+      background: linear-gradient(160deg, #e8e8ea 0%, #d0d0d2 45%, #c4c4c6 100%);
       border-radius: 40px;
-      padding: 12px;
+      padding: 11px;
       box-shadow:
-        0 40px 80px rgba(0,0,0,0.3),
-        0 0 0 1px rgba(255,255,255,0.08) inset,
-        0 2px 0 rgba(255,255,255,0.12) inset;
+        0 40px 80px rgba(0,0,0,0.22),
+        0 0 0 1px rgba(255,255,255,0.9) inset,
+        0 2px 0 rgba(255,255,255,0.95) inset,
+        inset 0 -1px 0 rgba(0,0,0,0.18),
+        0 1px 3px rgba(0,0,0,0.12);
       animation: phone-float 6s ease-in-out infinite;
     }
     @keyframes phone-float {
@@ -248,14 +250,31 @@
       50% { transform: translateY(-12px) rotate(1deg); }
     }
     .phone-inner {
-      background: #111; border-radius: 30px; overflow: hidden;
+      background: #000; border-radius: 30px; overflow: hidden;
       position: relative; height: 500px;
     }
+    /* Dynamic Island */
     .phone-notch {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 100px; height: 28px; background: #0a0a0a;
-      border-radius: 0 0 20px 20px; z-index: 10;
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      width: 72px; height: 20px; background: #000;
+      border-radius: 20px; z-index: 10;
     }
+    /* iOS status bar for analysis screen */
+    .ios-status {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 16px 0; flex-shrink: 0;
+    }
+    .ios-time { font-size: 12px; font-weight: 700; color: #1c1c1e; letter-spacing: -0.2px; }
+    .ios-right { display: flex; align-items: center; gap: 4px; }
+    .ios-signal { display: flex; gap: 1.5px; align-items: flex-end; }
+    .ios-bar { background: #1c1c1e; border-radius: 1px; width: 3px; }
+    .ios-wifi { font-size: 9px; color: #1c1c1e; }
+    .ios-batt {
+      width: 18px; height: 9px; border-radius: 2px; border: 1.2px solid #1c1c1e;
+      position: relative; display: flex; align-items: center; padding: 1.5px;
+    }
+    .ios-batt::after { content: ''; width: 2px; height: 4px; background: #1c1c1e; border-radius: 0 1px 1px 0; position: absolute; right: -3.5px; top: 50%; transform: translateY(-50%); }
+    .ios-batt-fill { height: 100%; width: 70%; background: #1c1c1e; border-radius: 1px; }
     .phone-screen { width: 100%; height: 100%; position: relative; overflow: hidden; }
     .screen-slide {
       position: absolute; inset: 0;
@@ -267,11 +286,131 @@
       padding: 38px 12px 14px;
       animation: screenFade1 10s ease-in-out infinite;
     }
+    /* ── Screen 2: Analysis — Premium iOS 17 ── */
     .screen-analysis {
-      background: linear-gradient(160deg, #0d0d1a 0%, #0a0a0f 100%);
-      padding: 44px 16px 20px;
+      background: #f5f5f7; padding: 0; overflow: hidden;
       animation: screenFade2 10s ease-in-out infinite;
+      display: flex; flex-direction: column;
     }
+    /* Glass header */
+    .an-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px 6px;
+      position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+      background: transparent;
+    }
+    .an-nav-btn {
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.9); border-radius: 50%;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.12), 0 0 0 0.5px rgba(0,0,0,0.06);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      flex-shrink: 0;
+    }
+    .an-nav-btn:active { transform: scale(0.92); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .an-title { font-size: 14px; font-weight: 700; color: #1c1c1e; letter-spacing: -0.3px; }
+    /* Hero image */
+    .an-img-hero {
+      width: 100%; height: 185px; position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .an-img-blur {
+      position: absolute; inset: -20px;
+      background: url('person-white.png') center 15%/cover no-repeat;
+      filter: blur(28px) brightness(0.7) saturate(1.4); transform: scale(1.2);
+    }
+    /* Bottom gradient fade */
+    .an-img-hero::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 55%; z-index: 3;
+      background: linear-gradient(to bottom, transparent, rgba(245,245,247,1));
+    }
+    .an-img-main {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center 15%; z-index: 2;
+    }
+    /* Floating tags — glassmorphism pills */
+    .an-tag {
+      position: absolute; z-index: 5; display: flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.82); backdrop-filter: blur(16px) saturate(1.8);
+      border: 1px solid rgba(255,255,255,0.75); border-radius: 20px;
+      padding: 4px 9px; font-size: 8px; font-weight: 700; color: #1c1c1e;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.14), 0 1px 3px rgba(0,0,0,0.08);
+      animation: tagFadeIn 0.6s ease forwards;
+    }
+    .an-tag-1 { bottom: 16px; left: 10px; animation-delay: 0.1s; opacity: 0; }
+    .an-tag-2 { bottom: 16px; right: 10px; animation-delay: 0.25s; opacity: 0; }
+    @keyframes tagFadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .an-tag-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .an-tag-dot.green { background: #30d158; box-shadow: 0 0 4px rgba(48,209,88,0.5); }
+    .an-tag-dot.blue { background: #007AFF; box-shadow: 0 0 4px rgba(0,122,255,0.5); }
+    /* Main card */
+    .an-card {
+      margin: 6px 8px 4px; background: #fff; border-radius: 20px;
+      padding: 12px 12px 10px; flex: 1;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      display: flex; flex-direction: column; gap: 10px; overflow: hidden;
+      animation: cardSlideUp 0.5s ease forwards;
+    }
+    @keyframes cardSlideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .an-card-header { display: flex; align-items: center; justify-content: space-between; }
+    .an-card-title { font-size: 13px; font-weight: 700; color: #1c1c1e; letter-spacing: -0.3px; }
+    .an-stepper {
+      display: flex; align-items: center; gap: 8px;
+      background: #f2f2f7; border-radius: 12px; padding: 4px 8px;
+    }
+    .an-step-btn { font-size: 14px; font-weight: 500; color: #007AFF; line-height: 1; width: 14px; text-align: center; }
+    .an-step-val { font-size: 11px; font-weight: 700; color: #1c1c1e; min-width: 12px; text-align: center; }
+    /* Metrics 2x2 */
+    .an-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .an-metric {
+      background: #fff; border-radius: 14px; padding: 10px 11px 9px;
+      display: flex; flex-direction: column; gap: 0;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .an-metric:active { transform: scale(0.97); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    /* Colored icon badge */
+    .an-metric-badge {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 8px; flex-shrink: 0;
+    }
+    .an-metric-val { font-size: 15px; font-weight: 800; color: #1c1c1e; line-height: 1.2; letter-spacing: -0.5px; }
+    .an-metric-label { font-size: 7px; color: #aeaeb2; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+    /* Trend badge */
+    .an-metric-trend { font-size: 7px; font-weight: 700; margin-top: 3px; }
+    .an-metric-trend.up { color: #30d158; }
+    .an-metric-trend.down { color: #ff453a; }
+    /* Progress */
+    .an-progress-label { font-size: 10px; font-weight: 600; color: #1c1c1e; }
+    .an-progress-sub { font-size: 8px; color: #30d158; font-weight: 600; }
+    .an-progress-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .an-progress-num { font-size: 10px; font-weight: 700; color: #007AFF; }
+    .an-progress-track {
+      height: 7px; background: #e5e5ea; border-radius: 10px; overflow: hidden;
+    }
+    .an-progress-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, #007AFF 0%, #34aadc 50%, #30d158 100%);
+      width: 0%;
+      animation: progressGrow 1.2s cubic-bezier(0.4,0,0.2,1) 0.4s forwards;
+    }
+    @keyframes progressGrow { from { width:0%; } to { width:70%; } }
+    /* Buttons */
+    .an-actions { display: flex; gap: 8px; }
+    .an-btn-primary {
+      flex: 2; background: #1c1c1e; color: #fff; border-radius: 13px;
+      font-size: 10px; font-weight: 700; text-align: center; padding: 10px 4px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      letter-spacing: -0.1px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .an-btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+    .an-btn-secondary {
+      flex: 1; background: transparent; color: #1c1c1e; border-radius: 13px;
+      font-size: 10px; font-weight: 600; text-align: center; padding: 10px 4px;
+      border: 1.5px solid #e0e0e5;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .an-btn-secondary:active { transform: scale(0.97); background: #f2f2f7; }
     @keyframes screenFade1 {
       0%, 42% { opacity: 1; }
       50%, 92% { opacity: 0; }
@@ -282,58 +421,88 @@
       50%, 92% { opacity: 1; }
       100%     { opacity: 0; }
     }
-    /* Camera screen */
-    .cam-status { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 6px; margin-bottom: 8px; flex-shrink: 0; }
-    .cam-time { font-size: 11px; font-weight: 700; color: #fff; }
-    .cam-icons { display: flex; gap: 3px; align-items: flex-end; }
-    .cam-bar { background: #fff; border-radius: 1px; width: 3px; }
+    /* ── Screen 1: Camera ── */
+    .cam-nav {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 10px 6px; flex-shrink: 0; z-index: 10;
+    }
+    .cam-nav-btn {
+      width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.12); border-radius: 50%;
+    }
+    .cam-nav-title { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.2px; }
     .cam-viewfinder {
-      width: 100%; flex: 1; border-radius: 14px; position: relative;
-      background: linear-gradient(170deg, #06060f 0%, #0c0c1e 100%);
-      margin-bottom: 10px; overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.06);
+      width: 100%; flex: 1; border-radius: 16px; position: relative;
+      background: #050510;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
     }
-    .cam-corner-tl { position: absolute; top: 8px; left: 8px; width: 18px; height: 18px; border-top: 2px solid #fff; border-left: 2px solid #fff; border-radius: 3px 0 0 0; z-index: 3; }
-    .cam-corner-tr { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-top: 2px solid #fff; border-right: 2px solid #fff; border-radius: 0 3px 0 0; z-index: 3; }
-    .cam-corner-bl { position: absolute; bottom: 8px; left: 8px; width: 18px; height: 18px; border-bottom: 2px solid #fff; border-left: 2px solid #fff; border-radius: 0 0 0 3px; z-index: 3; }
-    .cam-corner-br { position: absolute; bottom: 8px; right: 8px; width: 18px; height: 18px; border-bottom: 2px solid #fff; border-right: 2px solid #fff; border-radius: 0 0 3px 0; z-index: 3; }
-    .cam-rec {
-      position: absolute; top: 10px; right: 10px; z-index: 5;
-      display: flex; align-items: center; gap: 4px;
-      font-size: 8px; font-weight: 700; color: #fff; letter-spacing: 1px;
+    .cam-corner-tl { position: absolute; top: 8px; left: 8px; width: 20px; height: 20px; border-top: 2px solid rgba(255,255,255,0.9); border-left: 2px solid rgba(255,255,255,0.9); border-radius: 4px 0 0 0; z-index: 5; }
+    .cam-corner-tr { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-top: 2px solid rgba(255,255,255,0.9); border-right: 2px solid rgba(255,255,255,0.9); border-radius: 0 4px 0 0; z-index: 5; }
+    .cam-corner-bl { position: absolute; bottom: 8px; left: 8px; width: 20px; height: 20px; border-bottom: 2px solid rgba(255,255,255,0.9); border-left: 2px solid rgba(255,255,255,0.9); border-radius: 0 0 0 4px; z-index: 5; }
+    .cam-corner-br { position: absolute; bottom: 8px; right: 8px; width: 20px; height: 20px; border-bottom: 2px solid rgba(255,255,255,0.9); border-right: 2px solid rgba(255,255,255,0.9); border-radius: 0 0 4px 0; z-index: 5; }
+    .cam-frame-pulse {
+      position: absolute; inset: 6px; border-radius: 12px; z-index: 4;
+      border: 1.5px solid rgba(0,200,150,0.5);
+      animation: framePulse 2s ease-in-out infinite;
     }
-    .cam-rec-dot { width: 6px; height: 6px; border-radius: 50%; background: #ff3b30; animation: recBlink 1s ease-in-out infinite; }
+    @keyframes framePulse { 0%,100%{ opacity:0.3; box-shadow:0 0 0 0 rgba(0,200,150,0); } 50%{ opacity:1; box-shadow:0 0 12px 2px rgba(0,200,150,0.25); } }
+    .cam-scanning-badge {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 6;
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 20px;
+      padding: 4px 10px; font-size: 8px; font-weight: 700; color: #fff; letter-spacing: 1px;
+    }
+    .cam-rec-dot { width: 6px; height: 6px; border-radius: 50%; background: #ff3b30; animation: recBlink 1s ease-in-out infinite; flex-shrink: 0; }
     @keyframes recBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
     .cam-scan-glow {
       position: absolute; inset: 0; z-index: 1;
-      background: radial-gradient(ellipse 55% 70% at 50% 48%, rgba(0,200,150,0.07) 0%, transparent 70%);
+      background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(0,200,150,0.08) 0%, transparent 70%);
       animation: camGlowPulse 3s ease-in-out infinite;
     }
-    @keyframes camGlowPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1.0; } }
-    .cam-person-svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
+    @keyframes camGlowPulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
     .cam-scan-line {
-      position: absolute; left: 8%; right: 8%; height: 2px; z-index: 4;
+      position: absolute; left: 6%; right: 6%; height: 2px; z-index: 6;
       background: linear-gradient(90deg, transparent, rgba(0,220,160,0.95), transparent);
       box-shadow: 0 0 10px rgba(0,220,160,0.7), 0 0 22px rgba(0,220,160,0.3);
       animation: camScanLine 3s ease-in-out infinite;
     }
-    @keyframes camScanLine {
-      0%   { top: 6%; opacity: 0; }
-      8%   { opacity: 1; }
-      92%  { opacity: 1; }
-      100% { top: 94%; opacity: 0; }
+    @keyframes camScanLine { 0%{top:6%;opacity:0;} 8%{opacity:1;} 92%{opacity:1;} 100%{top:94%;opacity:0;} }
+    /* Bottom bar */
+    .cam-bottom-bar {
+      width: 100%; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px; padding: 8px 0 10px;
     }
-    .cam-hint { font-size: 9px; color: rgba(255,255,255,0.45); text-align: center; letter-spacing: 0.5px; margin-bottom: 10px; flex-shrink: 0; }
-    .cam-bottom { display: flex; justify-content: center; align-items: center; width: 100%; flex-shrink: 0; padding: 4px 0; }
-    .cam-shutter { width: 46px; height: 46px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; }
-    .cam-shutter-inner { width: 34px; height: 34px; border-radius: 50%; background: #fff; animation: shutterPulse 2.5s ease-in-out infinite; }
-    @keyframes shutterPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.9); opacity: 0.8; } }
+    .cam-scan-pill {
+      background: rgba(0,200,150,0.15); border: 1px solid rgba(0,200,150,0.45);
+      color: #00c896; font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+      padding: 5px 20px; border-radius: 20px;
+    }
+    .cam-main-controls {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 0 16px;
+    }
+    .cam-icon-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .cam-icon-circle {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cam-icon-label { font-size: 7px; color: rgba(255,255,255,0.4); font-weight: 500; }
+    .cam-shutter {
+      width: 50px; height: 50px; border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.6);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cam-shutter-inner { width: 38px; height: 38px; border-radius: 50%; background: #fff; animation: shutterPulse 2.5s ease-in-out infinite; }
+    @keyframes shutterPulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(0.9);opacity:0.85;} }
     .scan-label {
       font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 1.5px;
       font-weight: 600; text-transform: uppercase; margin-bottom: 14px;
     }
     .scan-frame {
-      width: 140px; height: 200px; border-radius: 20px;
+      width: 180px; height: 260px; border-radius: 20px;
       position: relative; margin-bottom: 16px;
       background: linear-gradient(160deg, rgba(0,102,255,0.15), rgba(0,200,150,0.08));
     }
@@ -351,6 +520,23 @@
     .scan-body-svg {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
       opacity: 0.7;
+    }
+    /* Real person photo in scan frame */
+    .scan-person-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: contain; object-position: center center;
+      border-radius: inherit;
+    }
+    /* Light scan frame for analysis screen — white-bg photo blends in */
+    .screen-analysis .scan-frame {
+      background: #f5f5f7 !important;
+      border: 1px solid rgba(0,0,0,0.07) !important;
+    }
+    /* Real person in camera viewfinder (black-bg photo blends with dark cam bg) */
+    .cam-person-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      z-index: 2; object-fit: cover;
+      object-position: center 25%;
     }
     .scan-line {
       position: absolute; left: 0; right: 0; height: 1px;
@@ -402,6 +588,70 @@
       animation: badge-float 4s ease-in-out infinite;
     }
     .badge-icon-green { width: 28px; height: 28px; background: #00c896; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+    /* ─── Dev Log ────────────────────────────────────────────────── */
+    #dev-log { background: #fff; padding: 80px 0; }
+    .dev-log-header { text-align: center; margin-bottom: 56px; }
+    .dev-log-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: #0066ff; margin-bottom: 14px;
+    }
+    .dev-log-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #0066ff;
+      animation: devDotPulse 2s ease-in-out infinite;
+    }
+    @keyframes devDotPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+    .dev-log-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: #0a0a0a; margin-bottom: 8px; }
+    .dev-log-sub { font-size: 15px; color: var(--gray-500); }
+    .dev-log-timeline {
+      max-width: 680px; margin: 0 auto; position: relative; padding-left: 32px;
+    }
+    .dev-log-timeline::before {
+      content: ''; position: absolute; left: 7px; top: 8px; bottom: 0;
+      width: 1px; background: linear-gradient(to bottom, #0066ff, rgba(0,102,255,0.1));
+    }
+    .dev-log-entry {
+      position: relative; margin-bottom: 36px;
+      opacity: 0; transform: translateX(-10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .dev-log-entry.visible { opacity: 1; transform: translateX(0); }
+    .dev-log-entry:last-child { margin-bottom: 0; }
+    .dev-log-dot {
+      position: absolute; left: -28px; top: 5px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #fff; border: 2px solid #0066ff;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dev-log-dot.latest { background: #0066ff; box-shadow: 0 0 0 4px rgba(0,102,255,0.15); }
+    .dev-log-dot.latest::after {
+      content: ''; width: 5px; height: 5px; border-radius: 50%; background: #fff;
+    }
+    .dev-log-dot.complete { background: #00c896; border-color: #00c896; }
+    .dev-log-dot.complete::after {
+      content: '✓'; color: #fff; font-size: 7px; font-weight: 800; line-height: 1;
+    }
+    .dev-log-date {
+      font-size: 11px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .dev-log-card {
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: 14px; padding: 16px 20px;
+    }
+    .dev-log-entry:nth-child(1) .dev-log-card { border-color: rgba(0,102,255,0.2); background: rgba(0,102,255,0.03); }
+    .dev-log-tag {
+      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; padding: 3px 8px; border-radius: 6px; margin-bottom: 6px;
+    }
+    .tag-ui     { background: rgba(0,102,255,0.1); color: #0066ff; }
+    .tag-feature { background: rgba(0,200,150,0.1); color: #00a87a; }
+    .tag-backend { background: rgba(245,166,35,0.12); color: #c98700; }
+    .tag-design  { background: rgba(160,100,255,0.1); color: #7c3aed; }
+    .tag-infra   { background: rgba(100,100,100,0.1); color: #555; }
+    .dev-log-name { font-size: 15px; font-weight: 700; color: #0a0a0a; margin-bottom: 4px; }
+    .dev-log-desc { font-size: 13px; color: var(--gray-500); line-height: 1.5; }
 
     /* ─── Problem / Solution ─────────────────────────────────────── */
     #problem-solution { background: var(--gray-50); }
@@ -819,98 +1069,146 @@
 
               <!-- ── Slide 1: Camera Capture ───────────────── -->
               <div class="screen-slide screen-camera">
-                <div class="cam-status">
-                  <span class="cam-time">9:41</span>
-                  <div class="cam-icons">
-                    <div class="cam-bar" style="height:5px;"></div>
-                    <div class="cam-bar" style="height:7px;"></div>
-                    <div class="cam-bar" style="height:9px;"></div>
-                    <div class="cam-bar" style="height:9px;opacity:0.3;"></div>
+                <!-- Top nav -->
+                <div class="cam-nav">
+                  <div class="cam-nav-btn">
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M6 1.5L2.5 4.5 6 7.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <span class="cam-nav-title">Scanner</span>
+                  <div class="cam-nav-btn">
+                    <svg width="12" height="4" viewBox="0 0 12 4" fill="none"><circle cx="2" cy="2" r="1.5" fill="#fff"/><circle cx="6" cy="2" r="1.5" fill="#fff"/><circle cx="10" cy="2" r="1.5" fill="#fff"/></svg>
                   </div>
                 </div>
+                <!-- Viewfinder -->
                 <div class="cam-viewfinder">
                   <div class="cam-corner-tl"></div>
                   <div class="cam-corner-tr"></div>
                   <div class="cam-corner-bl"></div>
                   <div class="cam-corner-br"></div>
-                  <div class="cam-rec"><div class="cam-rec-dot"></div>SCANNING</div>
+                  <div class="cam-frame-pulse"></div>
+                  <div class="cam-scanning-badge"><div class="cam-rec-dot"></div>SCANNING</div>
                   <div class="cam-scan-glow"></div>
-                  <svg class="cam-person-svg" viewBox="0 0 80 175" width="72" height="162" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Head -->
-                    <ellipse cx="40" cy="14" rx="11" ry="13" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.28)" stroke-width="1.5"/>
-                    <!-- Neck -->
-                    <rect x="35.5" y="26" width="9" height="9" rx="3" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
-                    <!-- Left upper arm raised -->
-                    <path d="M18 37 C12 34 7 28 9 20" stroke="rgba(255,255,255,0.25)" stroke-width="5" fill="none" stroke-linecap="round"/>
-                    <!-- Left forearm -->
-                    <path d="M9 20 C11 14 14 11 14 11" stroke="rgba(255,255,255,0.2)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                    <!-- Right upper arm raised -->
-                    <path d="M62 37 C68 34 73 28 71 20" stroke="rgba(255,255,255,0.25)" stroke-width="5" fill="none" stroke-linecap="round"/>
-                    <!-- Right forearm -->
-                    <path d="M71 20 C69 14 66 11 66 11" stroke="rgba(255,255,255,0.2)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                    <!-- Torso -->
-                    <path d="M18 37 L19 70 L28 74 L40 75 L52 74 L61 70 L62 37 C55 34 45 33 40 33 C35 33 25 34 18 37 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-                    <!-- Left leg -->
-                    <path d="M30 74 L26 108 L23 138 L24 165" stroke="rgba(255,255,255,0.17)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <!-- Right leg -->
-                    <path d="M50 74 L54 108 L57 138 L56 165" stroke="rgba(255,255,255,0.17)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <!-- Chest highlight (green) -->
-                    <path d="M22 37 C26 41 33 44 40 44 C47 44 54 41 58 37 L57 52 L40 55 L23 52 Z" fill="rgba(0,200,150,0.18)" stroke="rgba(0,200,150,0.5)" stroke-width="1"/>
-                    <!-- Left bicep (blue) -->
-                    <ellipse cx="9" cy="21" rx="4.5" ry="7" fill="rgba(0,102,255,0.28)" stroke="rgba(0,102,255,0.65)" stroke-width="1.2" transform="rotate(-15 9 21)"/>
-                    <!-- Right bicep (blue) -->
-                    <ellipse cx="71" cy="21" rx="4.5" ry="7" fill="rgba(0,102,255,0.28)" stroke="rgba(0,102,255,0.65)" stroke-width="1.2" transform="rotate(15 71 21)"/>
-                    <!-- Abs -->
-                    <path d="M32 56 L32 68 M38 56 L38 68 M44 56 L44 68 M50 56 L50 68" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
-                    <path d="M26 62 L54 62" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-                  </svg>
+                  <img src="person.png" class="cam-person-img" alt="body scan"/>
                   <div class="cam-scan-line"></div>
                 </div>
-                <p class="cam-hint">Hold still. Scanning your physique...</p>
-                <div class="cam-bottom">
-                  <div class="cam-shutter"><div class="cam-shutter-inner"></div></div>
+                <!-- Bottom bar -->
+                <div class="cam-bottom-bar">
+                  <div class="cam-scan-pill">Scan body</div>
+                  <div class="cam-main-controls">
+                    <div class="cam-icon-btn">
+                      <div class="cam-icon-circle">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="3" width="11" height="9" rx="2" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/><path d="M4 3V2a1 1 0 011-1h3a1 1 0 011 1v1" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/><circle cx="6.5" cy="7.5" r="2" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/></svg>
+                      </div>
+                      <span class="cam-icon-label">History</span>
+                    </div>
+                    <div class="cam-shutter"><div class="cam-shutter-inner"></div></div>
+                    <div class="cam-icon-btn">
+                      <div class="cam-icon-circle">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4h9M2 6.5h5M2 9h7" stroke="rgba(255,255,255,0.7)" stroke-width="1.2" stroke-linecap="round"/></svg>
+                      </div>
+                      <span class="cam-icon-label">Manual</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <!-- ── Slide 2: Analysis Results ─────────────── -->
               <div class="screen-slide screen-analysis">
-                <div class="scan-label">Body Scan Analysis</div>
-                <div class="scan-frame">
-                  <svg class="scan-body-svg" width="60" height="120" viewBox="0 0 60 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="30" cy="12" rx="10" ry="11" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                    <path d="M20 22C15 25 10 30 10 42L12 68L10 90" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M40 22C45 25 50 30 50 42L48 68L50 90" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M13 32C18 35 42 35 47 32" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M14 42L13 68L22 75L24 110" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M46 42L47 68L38 75L36 110" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M20 34C20 34 25 38 30 38C35 38 40 34 40 34L42 50L30 52L18 50Z" fill="rgba(0,102,255,0.25)" stroke="rgba(0,102,255,0.4)" stroke-width="1"/>
-                    <path d="M14 44L18 50L22 60L14 68Z" fill="rgba(0,200,150,0.2)" stroke="rgba(0,200,150,0.3)" stroke-width="1"/>
-                    <path d="M46 44L42 50L38 60L46 68Z" fill="rgba(0,200,150,0.2)" stroke="rgba(0,200,150,0.3)" stroke-width="1"/>
-                  </svg>
-                  <div class="scan-line"></div>
+                <!-- Status bar -->
+                <div class="ios-status">
+                  <span class="ios-time">9:41</span>
+                  <div class="ios-right">
+                    <div class="ios-signal">
+                      <div class="ios-bar" style="height:4px;"></div>
+                      <div class="ios-bar" style="height:6px;"></div>
+                      <div class="ios-bar" style="height:8px;"></div>
+                      <div class="ios-bar" style="height:8px;opacity:0.3;"></div>
+                    </div>
+                    <svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 3.5C3.1 1.3 5.65 0 6.5 0s3.4 1.3 5.5 3.5" stroke="#1c1c1e" stroke-width="1.4" stroke-linecap="round"/><path d="M3 5.8C4.1 4.6 5.3 4 6.5 4s2.4.6 3.5 1.8" stroke="#1c1c1e" stroke-width="1.4" stroke-linecap="round"/><circle cx="6.5" cy="9" r="1.2" fill="#1c1c1e"/></svg>
+                    <div class="ios-batt"><div class="ios-batt-fill"></div></div>
+                  </div>
                 </div>
-                <div class="scan-dots">
-                  <div class="scan-dot active"></div>
-                  <div class="scan-dot active"></div>
-                  <div class="scan-dot"></div>
-                  <div class="scan-dot"></div>
+                <!-- Hero image with header floating on top -->
+                <div class="an-img-hero">
+                  <div class="an-img-blur"></div>
+                  <img src="person-white.png" class="an-img-main" alt="body scan"/>
+                  <!-- Header overlays image -->
+                  <div class="an-header">
+                    <div class="an-nav-btn">
+                      <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6l5 5" stroke="#1c1c1e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <span class="an-title">Body Analysis</span>
+                    <div class="an-nav-btn">
+                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="10.5" cy="2.5" r="1.5" stroke="#1c1c1e" stroke-width="1.2"/><circle cx="2.5" cy="6.5" r="1.5" stroke="#1c1c1e" stroke-width="1.2"/><circle cx="10.5" cy="10.5" r="1.5" stroke="#1c1c1e" stroke-width="1.2"/><path d="M4 7.2l5 2.8M9 3.5L4 6" stroke="#1c1c1e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    </div>
+                  </div>
+                  <div class="an-tag an-tag-1"><span class="an-tag-dot green"></span>Body Fat: 18%</div>
+                  <div class="an-tag an-tag-2"><span class="an-tag-dot blue"></span>Muscle: High</div>
                 </div>
-                <div class="scan-stats">
-                  <div class="stat-chip">
-                    <div class="stat-chip-label">Muscle Mass</div>
-                    <div class="stat-chip-val blue">78<span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4)">%</span></div>
+                <!-- Main card -->
+                <div class="an-card">
+                  <div class="an-card-header">
+                    <span class="an-card-title">Core Analysis</span>
+                    <div class="an-stepper">
+                      <span class="an-step-btn">−</span>
+                      <span class="an-step-val">1</span>
+                      <span class="an-step-btn">+</span>
+                    </div>
                   </div>
-                  <div class="stat-chip">
-                    <div class="stat-chip-label">Body Fat</div>
-                    <div class="stat-chip-val green">14<span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4)">%</span></div>
+                  <!-- Metrics grid -->
+                  <div class="an-metrics">
+                    <!-- Body Fat -->
+                    <div class="an-metric">
+                      <div class="an-metric-badge" style="background:#fff1eb;">
+                        <svg width="14" height="16" viewBox="0 0 14 16" fill="none"><path d="M7 1C7 1 2 5.5 2 9.5a5 5 0 0010 0C12 5.5 7 1 7 1z" fill="#ff6b35"/><path d="M7 6c0 0-2 2.5-2 4a2 2 0 004 0C9 8.5 7 6 7 6z" fill="rgba(255,255,255,0.45)"/></svg>
+                      </div>
+                      <span class="an-metric-val" style="color:#ff6b35">18%</span>
+                      <span class="an-metric-label">Body Fat</span>
+                      <span class="an-metric-trend down">↓ –2% this week</span>
+                    </div>
+                    <!-- Muscle -->
+                    <div class="an-metric">
+                      <div class="an-metric-badge" style="background:#e8f0ff;">
+                        <svg width="16" height="14" viewBox="0 0 16 14" fill="none"><path d="M2 7c0-1.1.9-2 2-2h1V4a1 1 0 112 0v1h2V4a1 1 0 112 0v1h1a2 2 0 010 4h-1v1a1 1 0 11-2 0v-1H7v1a1 1 0 11-2 0v-1H4a2 2 0 01-2-2z" fill="#007AFF"/></svg>
+                      </div>
+                      <span class="an-metric-val" style="color:#007AFF">High</span>
+                      <span class="an-metric-label">Muscle Mass</span>
+                      <span class="an-metric-trend up">↑ Above avg</span>
+                    </div>
+                    <!-- Symmetry -->
+                    <div class="an-metric">
+                      <div class="an-metric-badge" style="background:#f3eeff;">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="7" width="3" height="6" rx="1" fill="#AF52DE"/><rect x="5.5" y="4" width="3" height="9" rx="1" fill="#AF52DE" opacity="0.7"/><rect x="10" y="1" width="3" height="12" rx="1" fill="#AF52DE" opacity="0.45"/></svg>
+                      </div>
+                      <span class="an-metric-val" style="color:#AF52DE">8.2<span style="font-size:9px;font-weight:600;color:#aeaeb2">/10</span></span>
+                      <span class="an-metric-label">Symmetry</span>
+                      <span class="an-metric-trend up">↑ Strong</span>
+                    </div>
+                    <!-- Strength -->
+                    <div class="an-metric">
+                      <div class="an-metric-badge" style="background:#e6faf0;">
+                        <svg width="12" height="16" viewBox="0 0 12 16" fill="none"><path d="M7 1L1 9h5l-1 6 6-9H6l1-5z" fill="#30d158"/></svg>
+                      </div>
+                      <span class="an-metric-val" style="color:#30d158">85<span style="font-size:9px;font-weight:600;color:#aeaeb2">kg</span></span>
+                      <span class="an-metric-label">Est. Strength</span>
+                      <span class="an-metric-trend up">↑ Top 20%</span>
+                    </div>
                   </div>
-                  <div class="stat-chip">
-                    <div class="stat-chip-label">Weak Point</div>
-                    <div class="stat-chip-val" style="font-size:12px;color:#f5a623;">Shoulders</div>
+                  <!-- Progress -->
+                  <div>
+                    <div class="an-progress-row">
+                      <div>
+                        <div class="an-progress-label">Muscle Gain Progress</div>
+                        <div class="an-progress-sub">↑ Good progress</div>
+                      </div>
+                      <span class="an-progress-num">7/10</span>
+                    </div>
+                    <div class="an-progress-track"><div class="an-progress-fill"></div></div>
                   </div>
-                  <div class="stat-chip">
-                    <div class="stat-chip-label">AI Score</div>
-                    <div class="stat-chip-val blue">7.4</div>
+                  <!-- Actions -->
+                  <div class="an-actions">
+                    <div class="an-btn-primary">Improve Plan</div>
+                    <div class="an-btn-secondary">Done</div>
                   </div>
                 </div>
               </div>
@@ -938,6 +1236,70 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Dev Log ───────────────────────────────────────────────── -->
+<section id="dev-log">
+  <div class="container">
+    <div class="dev-log-header reveal">
+      <div class="dev-log-eyebrow"><div class="dev-log-eyebrow-dot"></div>Build Progress</div>
+      <h2 class="dev-log-title">Development Log</h2>
+      <p class="dev-log-sub">A live record of what we're shipping as we build MuscleAPP.</p>
+    </div>
+    <div class="dev-log-timeline">
+
+      <div class="dev-log-entry reveal">
+        <div class="dev-log-dot latest"></div>
+        <div class="dev-log-date">29 Mar 2026</div>
+        <div class="dev-log-card">
+          <span class="dev-log-tag tag-ui">UI</span>
+          <div class="dev-log-name">Landing page launched</div>
+          <div class="dev-log-desc">Full showcase page live with animated hero, phone mockup, waitlist integration, and premium dark navbar.</div>
+        </div>
+      </div>
+
+      <div class="dev-log-entry reveal reveal-delay-1">
+        <div class="dev-log-dot complete"></div>
+        <div class="dev-log-date">22 Mar 2026</div>
+        <div class="dev-log-card">
+          <span class="dev-log-tag tag-feature">Feature</span>
+          <div class="dev-log-name">Body scan AI prototype</div>
+          <div class="dev-log-desc">First working prototype of the muscle-mapping algorithm. Detects major muscle groups from a single photo with 84% accuracy.</div>
+        </div>
+      </div>
+
+      <div class="dev-log-entry reveal reveal-delay-2">
+        <div class="dev-log-dot complete"></div>
+        <div class="dev-log-date">10 Mar 2026</div>
+        <div class="dev-log-card">
+          <span class="dev-log-tag tag-design">Design</span>
+          <div class="dev-log-name">App UX wireframes completed</div>
+          <div class="dev-log-desc">Full user flow designed: onboarding scan, results dashboard, workout plan, and progress tracking screens.</div>
+        </div>
+      </div>
+
+      <div class="dev-log-entry reveal reveal-delay-2">
+        <div class="dev-log-dot complete"></div>
+        <div class="dev-log-date">25 Feb 2026</div>
+        <div class="dev-log-card">
+          <span class="dev-log-tag tag-backend">Backend</span>
+          <div class="dev-log-name">AI training pipeline set up</div>
+          <div class="dev-log-desc">Data pipeline and model training infrastructure built. Initial dataset of 2,400+ labelled body scan images collected.</div>
+        </div>
+      </div>
+
+      <div class="dev-log-entry reveal reveal-delay-2">
+        <div class="dev-log-dot complete"></div>
+        <div class="dev-log-date">01 Mar 2026</div>
+        <div class="dev-log-card">
+          <span class="dev-log-tag tag-infra">Infra</span>
+          <div class="dev-log-name">Project kicked off</div>
+          <div class="dev-log-desc">Team formed, tech stack decided, and core concept validated. MuscleAPP officially begins development.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

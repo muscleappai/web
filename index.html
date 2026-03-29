@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MuscleAPP — AI-Powered Body Scanning</title>
+  <meta name="description" content="MuscleAPP analyzes your body, detects muscle mass and fat, and builds your perfect personalized training plan." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #0a0a0a;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Animated Background Mesh ──────────────────────────────── */
+    .bg-mesh {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; pointer-events: none; overflow: hidden;
+    }
+    .bg-mesh .orb {
+      position: absolute; border-radius: 50%; filter: blur(100px);
+      opacity: 0.35; will-change: transform;
+    }
+    .bg-mesh .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,102,255,0.18), transparent 70%);
+      top: -10%; left: -8%;
+      animation: orb-drift-1 18s ease-in-out infinite;
+    }
+    .bg-mesh .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,200,150,0.12), transparent 70%);
+      top: 30%; right: -10%;
+      animation: orb-drift-2 22s ease-in-out infinite;
+    }
+    .bg-mesh .orb-3 {
+      width: 450px; height: 450px;
+      background: radial-gradient(circle, rgba(245,166,35,0.10), transparent 70%);
+      bottom: 10%; left: 20%;
+      animation: orb-drift-3 20s ease-in-out infinite;
+    }
+    .bg-mesh .orb-4 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(130,80,255,0.10), transparent 70%);
+      top: 60%; right: 15%;
+      animation: orb-drift-4 25s ease-in-out infinite;
+    }
+    @keyframes orb-drift-1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(80px, 60px) scale(1.1); }
+      66% { transform: translate(-40px, 100px) scale(0.95); }
+    }
+    @keyframes orb-drift-2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-70px, 50px) scale(0.9); }
+      66% { transform: translate(50px, -80px) scale(1.08); }
+    }
+    @keyframes orb-drift-3 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(60px, -40px) scale(1.05); }
+      66% { transform: translate(-50px, -60px) scale(0.92); }
+    }
+    @keyframes orb-drift-4 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-40px, -50px) scale(1.1); }
+      66% { transform: translate(70px, 30px) scale(0.9); }
+    }
+
+    /* ─── CSS Variables ─────────────────────────────────────────── */
+    :root {
+      --accent: #111;
+      --accent-blue: #0066ff;
+      --accent-glow: rgba(0, 102, 255, 0.18);
+      --gray-50: #f9f9f9;
+      --gray-100: #f3f3f3;
+      --gray-200: #e8e8e8;
+      --gray-500: #888;
+      --gray-700: #444;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 24px 64px rgba(0,0,0,0.10);
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─── Scroll Animations ─────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+    .reveal-delay-6 { transition-delay: 0.6s; }
+
+    /* ─── Layout ─────────────────────────────────────────────────── */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 100px 0; }
+
+    /* ─── Navbar ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 0;
+      background: rgba(20,20,20,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      transition: var(--transition);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+    }
+    .nav-logo {
+      display: flex; align-items: center;
+      text-decoration: none;
+    }
+    .nav-logo-img {
+      height: 52px; width: auto; object-fit: contain;
+    }
+    .nav-badge {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+      background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+      padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);
+    }
+    .nav-cta {
+      background: #fff; color: #0a0a0a;
+      padding: 9px 20px; border-radius: 20px;
+      font-size: 13px; font-weight: 600; text-decoration: none;
+      transition: var(--transition);
+    }
+    .nav-cta:hover { background: #e8e8e8; transform: translateY(-1px); }
+
+    /* ─── Hero ───────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding-top: 88px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,102,255,0.05) 0%, transparent 70%);
+      overflow: hidden;
+    }
+    .hero-inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+      align-items: center; width: 100%;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--gray-100); border: 1px solid var(--gray-200);
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; color: var(--gray-700);
+      margin-bottom: 24px; letter-spacing: 0.3px;
+    }
+    .hero-tag-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #0066ff;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    .hero-h1 {
+      font-size: clamp(38px, 5vw, 64px);
+      font-weight: 900; line-height: 1.08;
+      letter-spacing: -2px; color: #0a0a0a;
+      margin-bottom: 20px;
+    }
+    .hero-h1 span { color: var(--accent-blue); }
+    .hero-sub {
+      font-size: 18px; color: var(--gray-500); font-weight: 400;
+      line-height: 1.6; max-width: 440px; margin-bottom: 40px;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #0a0a0a; color: #fff;
+      padding: 14px 28px; border-radius: 30px;
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      box-shadow: 0 0 0 0 var(--accent-glow);
+      transition: var(--transition);
+      cursor: pointer; border: none;
+    }
+    .btn-primary:hover {
+      background: #1a1a2e;
+      box-shadow: 0 8px 32px rgba(0, 102, 255, 0.25);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: #0a0a0a;
+      padding: 14px 28px; border-radius: 30px;
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      border: 1.5px solid var(--gray-200);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: var(--gray-100); border-color: var(--gray-200);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Phone */
+    .hero-visual {
+      display: flex; justify-content: center; align-items: center;
+      position: relative;
+    }
+    .hero-glow {
+      position: absolute;
+      width: 320px; height: 320px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,102,255,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      animation: glow-pulse 4s ease-in-out infinite;
+    }
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+    .phone-mockup {
+      position: relative; z-index: 2;
+      width: 260px;
+      background: #0a0a0a;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.08) inset,
+        0 2px 0 rgba(255,255,255,0.12) inset;
+      animation: phone-float 6s ease-in-out infinite;
+    }
+    @keyframes phone-float {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50% { transform: translateY(-12px) rotate(1deg); }
+    }
+    .phone-inner {
+      background: #111; border-radius: 30px; overflow: hidden;
+      position: relative; height: 500px;
+    }
+    .phone-notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 100px; height: 28px; background: #0a0a0a;
+      border-radius: 0 0 20px 20px; z-index: 10;
+    }
+    .phone-screen { width: 100%; height: 100%; position: relative; overflow: hidden; }
+    .screen-slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center;
+      overflow: hidden;
+    }
+    .screen-camera {
+      background: #070710;
+      padding: 38px 12px 14px;
+      animation: screenFade1 10s ease-in-out infinite;
+    }
+    .screen-analysis {
+      background: linear-gradient(160deg, #0d0d1a 0%, #0a0a0f 100%);
+      padding: 44px 16px 20px;
+      animation: screenFade2 10s ease-in-out infinite;
+    }
+    @keyframes screenFade1 {
+      0%, 42% { opacity: 1; }
+      50%, 92% { opacity: 0; }
+      100%     { opacity: 1; }
+    }
+    @keyframes screenFade2 {
+      0%, 42% { opacity: 0; }
+      50%, 92% { opacity: 1; }
+      100%     { opacity: 0; }
+    }
+    /* Camera screen */
+    .cam-status { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 6px; margin-bottom: 8px; flex-shrink: 0; }
+    .cam-time { font-size: 11px; font-weight: 700; color: #fff; }
+    .cam-icons { display: flex; gap: 3px; align-items: flex-end; }
+    .cam-bar { background: #fff; border-radius: 1px; width: 3px; }
+    .cam-viewfinder {
+      width: 100%; flex: 1; border-radius: 14px; position: relative;
+      background: linear-gradient(170deg, #06060f 0%, #0c0c1e 100%);
+      margin-bottom: 10px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .cam-corner-tl { position: absolute; top: 8px; left: 8px; width: 18px; height: 18px; border-top: 2px solid #fff; border-left: 2px solid #fff; border-radius: 3px 0 0 0; z-index: 3; }
+    .cam-corner-tr { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-top: 2px solid #fff; border-right: 2px solid #fff; border-radius: 0 3px 0 0; z-index: 3; }
+    .cam-corner-bl { position: absolute; bottom: 8px; left: 8px; width: 18px; height: 18px; border-bottom: 2px solid #fff; border-left: 2px solid #fff; border-radius: 0 0 0 3px; z-index: 3; }
+    .cam-corner-br { position: absolute; bottom: 8px; right: 8px; width: 18px; height: 18px; border-bottom: 2px solid #fff; border-right: 2px solid #fff; border-radius: 0 0 3px 0; z-index: 3; }
+    .cam-rec {
+      position: absolute; top: 10px; right: 10px; z-index: 5;
+      display: flex; align-items: center; gap: 4px;
+      font-size: 8px; font-weight: 700; color: #fff; letter-spacing: 1px;
+    }
+    .cam-rec-dot { width: 6px; height: 6px; border-radius: 50%; background: #ff3b30; animation: recBlink 1s ease-in-out infinite; }
+    @keyframes recBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+    .cam-scan-glow {
+      position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(ellipse 55% 70% at 50% 48%, rgba(0,200,150,0.07) 0%, transparent 70%);
+      animation: camGlowPulse 3s ease-in-out infinite;
+    }
+    @keyframes camGlowPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1.0; } }
+    .cam-person-svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
+    .cam-scan-line {
+      position: absolute; left: 8%; right: 8%; height: 2px; z-index: 4;
+      background: linear-gradient(90deg, transparent, rgba(0,220,160,0.95), transparent);
+      box-shadow: 0 0 10px rgba(0,220,160,0.7), 0 0 22px rgba(0,220,160,0.3);
+      animation: camScanLine 3s ease-in-out infinite;
+    }
+    @keyframes camScanLine {
+      0%   { top: 6%; opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { top: 94%; opacity: 0; }
+    }
+    .cam-hint { font-size: 9px; color: rgba(255,255,255,0.45); text-align: center; letter-spacing: 0.5px; margin-bottom: 10px; flex-shrink: 0; }
+    .cam-bottom { display: flex; justify-content: center; align-items: center; width: 100%; flex-shrink: 0; padding: 4px 0; }
+    .cam-shutter { width: 46px; height: 46px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; }
+    .cam-shutter-inner { width: 34px; height: 34px; border-radius: 50%; background: #fff; animation: shutterPulse 2.5s ease-in-out infinite; }
+    @keyframes shutterPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.9); opacity: 0.8; } }
+    .scan-label {
+      font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 1.5px;
+      font-weight: 600; text-transform: uppercase; margin-bottom: 14px;
+    }
+    .scan-frame {
+      width: 140px; height: 200px; border-radius: 20px;
+      position: relative; margin-bottom: 16px;
+      background: linear-gradient(160deg, rgba(0,102,255,0.15), rgba(0,200,150,0.08));
+    }
+    .scan-frame::before, .scan-frame::after {
+      content: '';
+      position: absolute; width: 20px; height: 20px;
+      border-color: #0066ff; border-style: solid;
+    }
+    .scan-frame::before {
+      top: 0; left: 0; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0;
+    }
+    .scan-frame::after {
+      bottom: 0; right: 0; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0;
+    }
+    .scan-body-svg {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      opacity: 0.7;
+    }
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,200,150,0.8), transparent);
+      animation: scan 2.5s ease-in-out infinite;
+      top: 0;
+    }
+    @keyframes scan {
+      0% { top: 8px; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: calc(100% - 8px); opacity: 0; }
+    }
+    .scan-dots {
+      display: flex; gap: 4px; margin-bottom: 12px;
+    }
+    .scan-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+    .scan-dot.active { background: #0066ff; }
+    .scan-stats {
+      width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    }
+    .stat-chip {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 8px 10px;
+    }
+    .stat-chip-label { font-size: 8px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+    .stat-chip-val { font-size: 16px; font-weight: 800; color: #fff; line-height: 1.2; }
+    .stat-chip-val.blue { color: #4d94ff; }
+    .stat-chip-val.green { color: #00c896; }
+    .phone-badge {
+      position: absolute; bottom: -10px; right: -20px; z-index: 5;
+      background: #fff; border-radius: 14px; padding: 10px 14px;
+      box-shadow: var(--shadow-md);
+      display: flex; align-items: center; gap: 8px;
+      animation: badge-float 5s ease-in-out infinite reverse;
+    }
+    @keyframes badge-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .badge-icon { width: 28px; height: 28px; background: #0066ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .badge-text-top { font-size: 10px; font-weight: 700; color: #0a0a0a; line-height: 1; }
+    .badge-text-bot { font-size: 9px; color: var(--gray-500); line-height: 1; margin-top: 2px; }
+    .phone-badge-2 {
+      position: absolute; top: 30px; left: -30px; z-index: 5;
+      background: #fff; border-radius: 14px; padding: 10px 14px;
+      box-shadow: var(--shadow-md);
+      display: flex; align-items: center; gap: 8px;
+      animation: badge-float 4s ease-in-out infinite;
+    }
+    .badge-icon-green { width: 28px; height: 28px; background: #00c896; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+    /* ─── Problem / Solution ─────────────────────────────────────── */
+    #problem-solution { background: var(--gray-50); }
+    .ps-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    }
+    .ps-col { padding: 48px; border-radius: var(--radius-xl); }
+    .ps-col-problem {
+      background: linear-gradient(120deg, #ffffff, #f0f4ff, #fff5f0, #f5fff8, #ffffff);
+      background-size: 300% 300%;
+      animation: cardShimmer 8s ease infinite;
+      border: 1px solid var(--gray-200);
+    }
+    @keyframes cardShimmer {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .ps-col-solution { background: #0a0a0a; color: #fff; }
+    .ps-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 24px; padding: 5px 12px; border-radius: 20px;
+    }
+    .ps-badge-problem { background: #fff0f0; color: #e53e3e; border: 1px solid #fcd5d5; }
+    .ps-badge-solution { background: rgba(0,200,150,0.15); color: #00c896; border: 1px solid rgba(0,200,150,0.25); }
+    .ps-title { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 28px; line-height: 1.2; }
+    .ps-col-solution .ps-title { color: #fff; }
+    .ps-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .ps-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 15px; line-height: 1.5; color: var(--gray-700);
+    }
+    .ps-col-solution .ps-list li { color: rgba(255,255,255,0.75); }
+    .ps-icon {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px;
+    }
+    .ps-icon-x { background: #fff0f0; color: #e53e3e; font-size: 10px; font-weight: 800; }
+    .ps-icon-check { background: rgba(0,200,150,0.15); color: #00c896; font-size: 10px; }
+
+    /* ─── How It Works ───────────────────────────────────────────── */
+    #how-it-works { background: #fff; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-label {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-blue);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 46px); font-weight: 900;
+      letter-spacing: -1.5px; color: #0a0a0a; line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 17px; color: var(--gray-500); max-width: 520px;
+      margin: 0 auto; line-height: 1.6;
+    }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+      position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute; top: 40px; left: calc(16.6% + 24px); right: calc(16.6% + 24px);
+      height: 1px; background: var(--gray-200);
+      z-index: 0;
+    }
+    .step-card {
+      background: #fff; border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 36px 28px 32px;
+      text-align: center; position: relative; z-index: 1;
+      transition: var(--transition);
+    }
+    .step-card:hover {
+      box-shadow: var(--shadow-md); border-color: transparent;
+      transform: translateY(-4px);
+    }
+    .step-num {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; margin: 0 auto 20px;
+      position: relative;
+    }
+    .step-num-1 { background: rgba(0,102,255,0.08); color: #0066ff; border: 2px solid rgba(0,102,255,0.2); }
+    .step-num-2 { background: rgba(0,200,150,0.08); color: #00c896; border: 2px solid rgba(0,200,150,0.2); }
+    .step-num-3 { background: rgba(255,160,0,0.08); color: #f5a623; border: 2px solid rgba(255,160,0,0.2); }
+    .step-icon-wrap { margin-bottom: 16px; }
+    .step-icon-wrap svg { width: 40px; height: 40px; }
+    .step-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 10px; }
+    .step-desc { font-size: 14px; color: var(--gray-500); line-height: 1.6; }
+
+    /* ─── Features ───────────────────────────────────────────────── */
+    #features { background: var(--gray-50); }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .feature-card {
+      background: #fff; border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 32px 28px;
+      transition: var(--transition);
+    }
+    .feature-card:hover {
+      box-shadow: var(--shadow-md); border-color: transparent;
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+    }
+    .fi-blue { background: rgba(0,102,255,0.08); }
+    .fi-green { background: rgba(0,200,150,0.08); }
+    .fi-orange { background: rgba(255,160,0,0.08); }
+    .fi-purple { background: rgba(130,80,255,0.08); }
+    .fi-pink { background: rgba(255,80,130,0.08); }
+    .fi-cyan { background: rgba(0,200,240,0.08); }
+    .feature-icon svg { width: 22px; height: 22px; }
+    .feature-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 8px; }
+    .feature-desc { font-size: 14px; color: var(--gray-500); line-height: 1.6; }
+
+    /* ─── App Preview ─────────────────────────────────────────────── */
+    #app-preview {
+      background: #fff;
+      overflow: hidden;
+    }
+    .preview-phones {
+      display: flex; justify-content: center; align-items: flex-end; gap: 20px;
+      perspective: 1000px;
+    }
+    .preview-phone {
+      background: #0a0a0a; border-radius: 36px;
+      padding: 10px;
+      box-shadow: var(--shadow-lg);
+    }
+    .preview-phone.center {
+      transform: scale(1.05); z-index: 2;
+      box-shadow: 0 32px 72px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.06);
+    }
+    .preview-phone.side {
+      opacity: 0.7;
+      transform: rotateY(12deg) scale(0.92);
+    }
+    .preview-phone.side-right { transform: rotateY(-12deg) scale(0.92); }
+    .preview-screen {
+      border-radius: 28px; overflow: hidden;
+      background: #0d0d1a;
+    }
+    .preview-screen.wide { width: 230px; }
+    .preview-screen.narrow { width: 200px; }
+
+    /* Screen 1 – Scan */
+    .ps1 {
+      height: 420px; background: linear-gradient(160deg, #080818, #0d0d20);
+      display: flex; flex-direction: column; align-items: center; padding: 20px 14px 16px;
+    }
+    .ps1-topbar {
+      width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .ps1-title { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+    .ps1-badge { font-size: 9px; font-weight: 700; color: #00c896; background: rgba(0,200,150,0.1); border: 1px solid rgba(0,200,150,0.2); padding: 3px 8px; border-radius: 20px; }
+    .ps1-frame {
+      flex: 1; width: 100%; border-radius: 16px; position: relative; overflow: hidden;
+      background: rgba(0,102,255,0.04); border: 1px solid rgba(0,102,255,0.15);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+    }
+    .ps1-scan-anim {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #00c896, transparent);
+      animation: scan 2.5s ease-in-out infinite;
+    }
+    .ps1-points {
+      position: absolute; width: 100%; height: 100%;
+    }
+    .ps1-point {
+      position: absolute; width: 5px; height: 5px; border-radius: 50%;
+      background: #0066ff; opacity: 0;
+      animation: dot-appear 0.4s ease forwards;
+    }
+    .ps1-instruction { font-size: 11px; color: rgba(255,255,255,0.4); text-align: center; letter-spacing: 0.3px; }
+
+    /* Screen 2 – Analysis */
+    .ps2 {
+      height: 460px; background: linear-gradient(160deg, #060610, #0a0a18);
+      display: flex; flex-direction: column; padding: 20px 16px 16px;
+    }
+    .ps2-header { margin-bottom: 14px; }
+    .ps2-title { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: -0.3px; margin-bottom: 2px; }
+    .ps2-sub { font-size: 10px; color: rgba(255,255,255,0.35); }
+    .ps2-score-wrap { margin-bottom: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; }
+    .ps2-score-label { font-size: 9px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600; }
+    .ps2-score { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; margin-bottom: 6px; }
+    .ps2-score span { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.35); }
+    .ps2-bar-wrap { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+    .ps2-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #0066ff, #00c896); width: 74%; }
+    .ps2-metrics { display: flex; flex-direction: column; gap: 8px; }
+    .ps2-metric { display: flex; align-items: center; gap: 10px; }
+    .ps2-metric-label { font-size: 11px; color: rgba(255,255,255,0.5); flex: 1; font-weight: 500; }
+    .ps2-metric-bar-wrap { flex: 2; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+    .ps2-metric-bar { height: 100%; border-radius: 2px; }
+    .ps2-metric-val { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 700; width: 30px; text-align: right; }
+    .bar-blue { background: #0066ff; }
+    .bar-green { background: #00c896; }
+    .bar-orange { background: #f5a623; }
+    .ps2-tag { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .ps2-tag-item { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+    .tag-blue { background: rgba(0,102,255,0.12); color: #4d94ff; border: 1px solid rgba(0,102,255,0.2); }
+    .tag-orange { background: rgba(245,166,35,0.12); color: #f5a623; border: 1px solid rgba(245,166,35,0.2); }
+
+    /* Screen 3 – Training */
+    .ps3 {
+      height: 420px; background: linear-gradient(160deg, #060610, #0a0a18);
+      display: flex; flex-direction: column; padding: 20px 14px 16px;
+    }
+    .ps3-header { margin-bottom: 12px; }
+    .ps3-title { font-size: 13px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+    .ps3-sub { font-size: 9px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+    .ps3-day { display: flex; gap: 6px; margin-bottom: 10px; overflow: hidden; }
+    .ps3-day-btn {
+      font-size: 9px; font-weight: 700; padding: 5px 10px; border-radius: 20px;
+      background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4);
+    }
+    .ps3-day-btn.active { background: #0066ff; color: #fff; }
+    .ps3-exercises { display: flex; flex-direction: column; gap: 7px; }
+    .ps3-ex {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 9px 10px; display: flex; align-items: center; gap: 10px;
+    }
+    .ps3-ex-num { width: 22px; height: 22px; border-radius: 6px; background: rgba(0,102,255,0.15); color: #4d94ff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ps3-ex-info { flex: 1; }
+    .ps3-ex-name { font-size: 11px; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 2px; }
+    .ps3-ex-sets { font-size: 9px; color: rgba(255,255,255,0.35); }
+    .ps3-ex-muscle { font-size: 9px; font-weight: 700; color: #00c896; background: rgba(0,200,150,0.08); padding: 2px 6px; border-radius: 20px; }
+
+    /* ─── Vision ──────────────────────────────────────────────────── */
+    #vision {
+      background: #0a0a0a; color: #fff;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #vision::before {
+      content: '';
+      position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,102,255,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .vision-label { color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+    .vision-title {
+      font-size: clamp(28px, 4vw, 48px); font-weight: 900;
+      letter-spacing: -1.5px; color: #fff; margin-bottom: 20px; line-height: 1.1;
+    }
+    .vision-title span { color: #4d94ff; }
+    .vision-text {
+      font-size: 17px; color: rgba(255,255,255,0.5); max-width: 540px; margin: 0 auto 48px;
+      line-height: 1.7;
+    }
+    .vision-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .vision-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 18px; border-radius: 30px;
+      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
+    }
+    .vision-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: #0066ff; }
+
+    /* ─── Waitlist ────────────────────────────────────────────────── */
+    #waitlist { background: var(--gray-50); }
+    .waitlist-box {
+      max-width: 560px; margin: 0 auto; text-align: center;
+    }
+    .waitlist-title {
+      font-size: clamp(26px, 3.5vw, 40px); font-weight: 900;
+      letter-spacing: -1.2px; margin-bottom: 14px; line-height: 1.1;
+    }
+    .waitlist-sub { font-size: 16px; color: var(--gray-500); margin-bottom: 36px; line-height: 1.6; }
+    .waitlist-form {
+      display: flex; gap: 10px; max-width: 440px; margin: 0 auto 20px;
+    }
+    .waitlist-input {
+      flex: 1; padding: 14px 20px; border-radius: 30px;
+      border: 1.5px solid var(--gray-200); background: #fff;
+      font-size: 15px; font-family: inherit; color: #0a0a0a;
+      outline: none; transition: var(--transition);
+    }
+    .waitlist-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 4px var(--accent-glow); }
+    .waitlist-input::placeholder { color: var(--gray-500); }
+    .waitlist-note { font-size: 13px; color: var(--gray-500); }
+    .waitlist-count {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; border: 1px solid var(--gray-200);
+      padding: 8px 16px; border-radius: 30px; margin-bottom: 28px;
+      font-size: 13px; font-weight: 600; color: var(--gray-700);
+    }
+    .count-avatars { display: flex; }
+    .count-avatar {
+      width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff;
+      margin-left: -6px; background: var(--gray-200); overflow: hidden;
+      display: flex; align-items: center; justify-content: center; font-size: 10px;
+    }
+    .count-avatar:first-child { margin-left: 0; }
+    .ca-1 { background: #0066ff; color: #fff; }
+    .ca-2 { background: #00c896; color: #fff; }
+    .ca-3 { background: #f5a623; color: #fff; }
+
+    /* ─── Footer ──────────────────────────────────────────────────── */
+    footer {
+      background: #0a0a0a;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-main {
+      max-width: 1120px; margin: 0 auto; padding: 48px 24px 40px;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 32px;
+    }
+    .footer-brand { display: flex; flex-direction: column; gap: 10px; }
+    .footer-brand-row { display: flex; align-items: center; gap: 10px; }
+    .footer-logo-img { height: 28px; width: auto; object-fit: contain; }
+    .footer-brand-name { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+    .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.4); max-width: 220px; line-height: 1.5; }
+    .footer-links { display: flex; gap: 28px; align-items: center; padding-top: 4px; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.45); text-decoration: none; transition: var(--transition); font-weight: 500; }
+    .footer-links a:hover { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      max-width: 1120px; margin: 0 auto; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); font-weight: 400; }
+
+    /* ─── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+      .hero-sub { max-width: 100%; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { order: -1; }
+      .ps-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .steps-grid::before { display: none; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .preview-phones { gap: 10px; }
+      .preview-phone.side { display: none; }
+      .preview-phone.center { transform: none; }
+    }
+    @media (max-width: 600px) {
+      section { padding: 70px 0; }
+      .features-grid { grid-template-columns: 1fr; }
+      .waitlist-form { flex-direction: column; }
+      .nav-logo-img { height: 40px; }
+      .phone-badge-2 { display: none; }
+      .hero-h1 { letter-spacing: -1.5px; }
+      .footer-main { flex-direction: column; align-items: center; text-align: center; }
+      .footer-brand { align-items: center; }
+      .footer-tagline { max-width: 100%; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Animated Background ───────────────────────────────────── -->
+<div class="bg-mesh">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+
+<!-- ─── Navbar ─────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <img src="logo.png" alt="MuscleAPP" class="nav-logo-img" />
+    </a>
+    <div class="nav-badge">In Development</div>
+    <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+  </div>
+</nav>
+
+<!-- ─── Hero ───────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-tag reveal">
+          <span class="hero-tag-dot"></span>
+          AI-Powered Fitness Intelligence
+        </div>
+        <h1 class="hero-h1 reveal reveal-delay-1">
+          Your Body.<br />
+          <span>Analyzed.</span><br />
+          Optimized.
+        </h1>
+        <p class="hero-sub reveal reveal-delay-2">
+          AI-powered body scanning that detects muscle mass, fat distribution, and weak points, then builds your perfect training plan.
+        </p>
+        <div class="hero-actions reveal reveal-delay-3">
+          <a href="#waitlist" class="btn-primary">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" fill="white" opacity="0.8"/><circle cx="7" cy="7" r="6" stroke="white" stroke-width="1.5"/></svg>
+            Coming Soon
+          </a>
+          <a href="#how-it-works" class="btn-secondary">
+            See How It Works
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual reveal reveal-delay-2">
+        <div class="hero-glow"></div>
+        <div class="phone-mockup">
+          <div class="phone-inner">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+
+              <!-- ── Slide 1: Camera Capture ───────────────── -->
+              <div class="screen-slide screen-camera">
+                <div class="cam-status">
+                  <span class="cam-time">9:41</span>
+                  <div class="cam-icons">
+                    <div class="cam-bar" style="height:5px;"></div>
+                    <div class="cam-bar" style="height:7px;"></div>
+                    <div class="cam-bar" style="height:9px;"></div>
+                    <div class="cam-bar" style="height:9px;opacity:0.3;"></div>
+                  </div>
+                </div>
+                <div class="cam-viewfinder">
+                  <div class="cam-corner-tl"></div>
+                  <div class="cam-corner-tr"></div>
+                  <div class="cam-corner-bl"></div>
+                  <div class="cam-corner-br"></div>
+                  <div class="cam-rec"><div class="cam-rec-dot"></div>SCANNING</div>
+                  <div class="cam-scan-glow"></div>
+                  <svg class="cam-person-svg" viewBox="0 0 80 175" width="72" height="162" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Head -->
+                    <ellipse cx="40" cy="14" rx="11" ry="13" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.28)" stroke-width="1.5"/>
+                    <!-- Neck -->
+                    <rect x="35.5" y="26" width="9" height="9" rx="3" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                    <!-- Left upper arm raised -->
+                    <path d="M18 37 C12 34 7 28 9 20" stroke="rgba(255,255,255,0.25)" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <!-- Left forearm -->
+                    <path d="M9 20 C11 14 14 11 14 11" stroke="rgba(255,255,255,0.2)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <!-- Right upper arm raised -->
+                    <path d="M62 37 C68 34 73 28 71 20" stroke="rgba(255,255,255,0.25)" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <!-- Right forearm -->
+                    <path d="M71 20 C69 14 66 11 66 11" stroke="rgba(255,255,255,0.2)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <!-- Torso -->
+                    <path d="M18 37 L19 70 L28 74 L40 75 L52 74 L61 70 L62 37 C55 34 45 33 40 33 C35 33 25 34 18 37 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+                    <!-- Left leg -->
+                    <path d="M30 74 L26 108 L23 138 L24 165" stroke="rgba(255,255,255,0.17)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <!-- Right leg -->
+                    <path d="M50 74 L54 108 L57 138 L56 165" stroke="rgba(255,255,255,0.17)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <!-- Chest highlight (green) -->
+                    <path d="M22 37 C26 41 33 44 40 44 C47 44 54 41 58 37 L57 52 L40 55 L23 52 Z" fill="rgba(0,200,150,0.18)" stroke="rgba(0,200,150,0.5)" stroke-width="1"/>
+                    <!-- Left bicep (blue) -->
+                    <ellipse cx="9" cy="21" rx="4.5" ry="7" fill="rgba(0,102,255,0.28)" stroke="rgba(0,102,255,0.65)" stroke-width="1.2" transform="rotate(-15 9 21)"/>
+                    <!-- Right bicep (blue) -->
+                    <ellipse cx="71" cy="21" rx="4.5" ry="7" fill="rgba(0,102,255,0.28)" stroke="rgba(0,102,255,0.65)" stroke-width="1.2" transform="rotate(15 71 21)"/>
+                    <!-- Abs -->
+                    <path d="M32 56 L32 68 M38 56 L38 68 M44 56 L44 68 M50 56 L50 68" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+                    <path d="M26 62 L54 62" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                  </svg>
+                  <div class="cam-scan-line"></div>
+                </div>
+                <p class="cam-hint">Hold still. Scanning your physique...</p>
+                <div class="cam-bottom">
+                  <div class="cam-shutter"><div class="cam-shutter-inner"></div></div>
+                </div>
+              </div>
+
+              <!-- ── Slide 2: Analysis Results ─────────────── -->
+              <div class="screen-slide screen-analysis">
+                <div class="scan-label">Body Scan Analysis</div>
+                <div class="scan-frame">
+                  <svg class="scan-body-svg" width="60" height="120" viewBox="0 0 60 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="30" cy="12" rx="10" ry="11" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                    <path d="M20 22C15 25 10 30 10 42L12 68L10 90" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M40 22C45 25 50 30 50 42L48 68L50 90" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M13 32C18 35 42 35 47 32" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M14 42L13 68L22 75L24 110" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M46 42L47 68L38 75L36 110" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M20 34C20 34 25 38 30 38C35 38 40 34 40 34L42 50L30 52L18 50Z" fill="rgba(0,102,255,0.25)" stroke="rgba(0,102,255,0.4)" stroke-width="1"/>
+                    <path d="M14 44L18 50L22 60L14 68Z" fill="rgba(0,200,150,0.2)" stroke="rgba(0,200,150,0.3)" stroke-width="1"/>
+                    <path d="M46 44L42 50L38 60L46 68Z" fill="rgba(0,200,150,0.2)" stroke="rgba(0,200,150,0.3)" stroke-width="1"/>
+                  </svg>
+                  <div class="scan-line"></div>
+                </div>
+                <div class="scan-dots">
+                  <div class="scan-dot active"></div>
+                  <div class="scan-dot active"></div>
+                  <div class="scan-dot"></div>
+                  <div class="scan-dot"></div>
+                </div>
+                <div class="scan-stats">
+                  <div class="stat-chip">
+                    <div class="stat-chip-label">Muscle Mass</div>
+                    <div class="stat-chip-val blue">78<span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4)">%</span></div>
+                  </div>
+                  <div class="stat-chip">
+                    <div class="stat-chip-label">Body Fat</div>
+                    <div class="stat-chip-val green">14<span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4)">%</span></div>
+                  </div>
+                  <div class="stat-chip">
+                    <div class="stat-chip-label">Weak Point</div>
+                    <div class="stat-chip-val" style="font-size:12px;color:#f5a623;">Shoulders</div>
+                  </div>
+                  <div class="stat-chip">
+                    <div class="stat-chip-label">AI Score</div>
+                    <div class="stat-chip-val blue">7.4</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- Floating badges -->
+        <div class="phone-badge-2">
+          <div class="badge-icon-green">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7.5L5.5 11L12 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="badge-text-top">Plan Ready</div>
+            <div class="badge-text-bot">12 Exercises</div>
+          </div>
+        </div>
+        <div class="phone-badge">
+          <div class="badge-icon">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v4l2.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="7" r="5" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+          <div>
+            <div class="badge-text-top">AI Analysis</div>
+            <div class="badge-text-bot">0.3s scan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Problem / Solution ─────────────────────────────────────── -->
+<section id="problem-solution">
+  <div class="container">
+    <div class="ps-grid">
+      <div class="ps-col ps-col-problem reveal">
+        <span class="ps-badge ps-badge-problem">✗ The Problem</span>
+        <h3 class="ps-title">Generic fitness doesn't work for you</h3>
+        <ul class="ps-list">
+          <li>
+            <div class="ps-icon ps-icon-x">✗</div>
+            Generic workout plans ignore your unique body composition
+          </li>
+          <li>
+            <div class="ps-icon ps-icon-x">✗</div>
+            Personal trainers cost hundreds per month and aren't accessible for most
+          </li>
+          <li>
+            <div class="ps-icon ps-icon-x">✗</div>
+            No way to know which muscles are actually underdeveloped
+          </li>
+          <li>
+            <div class="ps-icon ps-icon-x">✗</div>
+            Progress tracking is guesswork without real body data
+          </li>
+        </ul>
+      </div>
+      <div class="ps-col ps-col-solution reveal reveal-delay-2">
+        <span class="ps-badge ps-badge-solution">✓ The Solution</span>
+        <h3 class="ps-title">MuscleAPP knows your body</h3>
+        <ul class="ps-list">
+          <li>
+            <div class="ps-icon ps-icon-check">✓</div>
+            Scans your actual physique and maps every muscle group precisely
+          </li>
+          <li>
+            <div class="ps-icon ps-icon-check">✓</div>
+            AI builds a plan targeting YOUR weak points and goals
+          </li>
+          <li>
+            <div class="ps-icon ps-icon-check">✓</div>
+            Adapts to your progress automatically. Always optimal.
+          </li>
+          <li>
+            <div class="ps-icon ps-icon-check">✓</div>
+            Real data. Real results. Zero guesswork.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── How It Works ───────────────────────────────────────────── -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">How It Works</span>
+      <h2 class="section-title reveal reveal-delay-1">Three steps to your<br />perfect training plan</h2>
+      <p class="section-sub reveal reveal-delay-2">No gym assessment, no guesswork, no generic templates. Just your phone, your body, and AI precision.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-num step-num-1">1</div>
+        <div class="step-icon-wrap">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="rgba(0,102,255,0.06)"/>
+            <rect x="10" y="8" width="20" height="28" rx="4" stroke="#0066ff" stroke-width="1.8"/>
+            <circle cx="20" cy="18" r="5" stroke="#0066ff" stroke-width="1.8"/>
+            <path d="M14 30s2-4 6-4 6 4 6 4" stroke="#0066ff" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="step-title">Take a Photo</div>
+        <p class="step-desc">Snap a quick photo of your body in standard position. Front, side, or back. MuscleAPP handles it all in seconds.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-num step-num-2">2</div>
+        <div class="step-icon-wrap">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="rgba(0,200,150,0.06)"/>
+            <circle cx="20" cy="20" r="9" stroke="#00c896" stroke-width="1.8"/>
+            <path d="M14 20c0-3.3 2.7-6 6-6" stroke="#00c896" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M20 14v2M20 24v2M14 20h2M24 20h2" stroke="#00c896" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="2.5" fill="#00c896"/>
+          </svg>
+        </div>
+        <div class="step-title">AI Scans Your Body</div>
+        <p class="step-desc">Advanced computer vision maps your muscle groups, estimates body fat, and identifies exactly where you need focus.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-4">
+        <div class="step-num step-num-3">3</div>
+        <div class="step-icon-wrap">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="rgba(245,166,35,0.06)"/>
+            <path d="M10 28V18l4-4h12l4 4v10H10z" stroke="#f5a623" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M15 22h10M15 25.5h7" stroke="#f5a623" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M20 14v-3M17 11h6" stroke="#f5a623" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="step-title">Get Your Plan</div>
+        <p class="step-desc">Receive a fully personalized training program tailored to your physique, goals, and available equipment. Start today.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Features ───────────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">Features</span>
+      <h2 class="section-title reveal reveal-delay-1">Everything your body needs</h2>
+      <p class="section-sub reveal reveal-delay-2">Built with precision, designed for results. Every feature works together to give you the smartest training experience possible.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon fi-blue">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 2C11 2 6 5 6 11C6 14 8 16.5 11 17C14 16.5 16 14 16 11C16 5 11 2 11 2Z" stroke="#0066ff" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M7.5 11C7.5 11 9 12.5 11 12.5C13 12.5 14.5 11 14.5 11" stroke="#0066ff" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feature-title">AI Body Scanning</div>
+        <p class="feature-desc">Photo-based body analysis using advanced computer vision. Scans posture, symmetry, and muscle development in seconds.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon fi-green">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="8" stroke="#00c896" stroke-width="1.6"/>
+            <path d="M7 11l3 3 5-5" stroke="#00c896" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="feature-title">Muscle & Fat Analysis</div>
+        <p class="feature-desc">Precise breakdown of muscle mass percentage, body fat estimation, and weak point identification across all major muscle groups.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon fi-orange">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="5" width="16" height="14" rx="2" stroke="#f5a623" stroke-width="1.6"/>
+            <path d="M7 5V3M15 5V3" stroke="#f5a623" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M6 11h10M6 15h6" stroke="#f5a623" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feature-title">Personalized Training</div>
+        <p class="feature-desc">Fully custom workout programs generated by AI, adapted to your body data, goals, and available equipment.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon fi-purple">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 16l4-5 4 3 4-6 4 3" stroke="#8250ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="3" y="3" width="16" height="16" rx="2" stroke="#8250ff" stroke-width="1.6"/>
+          </svg>
+        </div>
+        <div class="feature-title">Progress Tracking</div>
+        <p class="feature-desc">Visual progress over time with side-by-side scan comparisons. See exactly where your body is improving week by week.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon fi-pink">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 3v4M11 15v4M4.2 6.2l2.8 2.8M15 13l2.8 2.8M3 11h4M15 11h4M4.2 15.8l2.8-2.8M15 9l2.8-2.8" stroke="#ff5082" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="11" cy="11" r="3" stroke="#ff5082" stroke-width="1.6"/>
+          </svg>
+        </div>
+        <div class="feature-title">Calorie Tracker</div>
+        <p class="feature-desc">Smart calorie targets based on your scan data and goals. Macro-aware nutrition guidance aligned with your training plan.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon fi-cyan">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 17V9l6-6 6 6v8" stroke="#00c8f0" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M9 17v-5h4v5" stroke="#00c8f0" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="feature-title">Gym Performance</div>
+        <p class="feature-desc">Log lifts, track PRs, and get AI-powered performance insights correlated with your body composition changes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── App Preview ─────────────────────────────────────────────── -->
+<section id="app-preview">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">App Preview</span>
+      <h2 class="section-title reveal reveal-delay-1">Precision, built into every screen</h2>
+      <p class="section-sub reveal reveal-delay-2">A glimpse of the MuscleAPP experience. Clean, dark, and built for serious athletes.</p>
+    </div>
+    <div class="preview-phones reveal reveal-delay-2">
+      <!-- Phone 1: Scan -->
+      <div class="preview-phone side">
+        <div class="preview-screen narrow">
+          <div class="ps1">
+            <div class="ps1-topbar">
+              <span class="ps1-title">Body Scan</span>
+              <span class="ps1-badge">LIVE</span>
+            </div>
+            <div class="ps1-frame">
+              <svg width="70" height="130" viewBox="0 0 70 130" fill="none" style="position:relative;z-index:1">
+                <ellipse cx="35" cy="14" rx="11" ry="12" stroke="rgba(0,102,255,0.5)" stroke-width="1.5"/>
+                <path d="M24 25C18 28 12 35 12 48L14 78L12 104" stroke="rgba(0,102,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M46 25C52 28 58 35 58 48L56 78L58 104" stroke="rgba(0,102,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M14 38C20 42 50 42 56 38" stroke="rgba(0,102,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M16 50L14 78L26 88L28 124" stroke="rgba(0,102,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M54 50L56 78L44 88L42 124" stroke="rgba(0,102,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M24 39C24 39 29 44 35 44C41 44 46 39 46 39L48 58L35 61L22 58Z" fill="rgba(0,102,255,0.2)" stroke="rgba(0,102,255,0.5)" stroke-width="1"/>
+              </svg>
+              <div class="ps1-scan-anim"></div>
+            </div>
+            <p class="ps1-instruction">Hold steady. Scanning in progress</p>
+          </div>
+        </div>
+      </div>
+      <!-- Phone 2: Analysis (center) -->
+      <div class="preview-phone center">
+        <div class="preview-screen wide">
+          <div class="ps2">
+            <div class="ps2-header">
+              <div class="ps2-title">Body Analysis</div>
+              <div class="ps2-sub">Updated today · AI Confidence 96%</div>
+            </div>
+            <div class="ps2-score-wrap">
+              <div class="ps2-score-label">Overall Fitness Score</div>
+              <div class="ps2-score">7.4<span>/10</span></div>
+              <div class="ps2-bar-wrap"><div class="ps2-bar"></div></div>
+            </div>
+            <div class="ps2-metrics">
+              <div class="ps2-metric">
+                <span class="ps2-metric-label">Chest</span>
+                <div class="ps2-metric-bar-wrap"><div class="ps2-metric-bar bar-blue" style="width:82%"></div></div>
+                <span class="ps2-metric-val">82%</span>
+              </div>
+              <div class="ps2-metric">
+                <span class="ps2-metric-label">Back</span>
+                <div class="ps2-metric-bar-wrap"><div class="ps2-metric-bar bar-blue" style="width:76%"></div></div>
+                <span class="ps2-metric-val">76%</span>
+              </div>
+              <div class="ps2-metric">
+                <span class="ps2-metric-label">Shoulders</span>
+                <div class="ps2-metric-bar-wrap"><div class="ps2-metric-bar bar-orange" style="width:48%"></div></div>
+                <span class="ps2-metric-val" style="color:#f5a623">48%</span>
+              </div>
+              <div class="ps2-metric">
+                <span class="ps2-metric-label">Legs</span>
+                <div class="ps2-metric-bar-wrap"><div class="ps2-metric-bar bar-green" style="width:68%"></div></div>
+                <span class="ps2-metric-val">68%</span>
+              </div>
+              <div class="ps2-metric">
+                <span class="ps2-metric-label">Arms</span>
+                <div class="ps2-metric-bar-wrap"><div class="ps2-metric-bar bar-blue" style="width:71%"></div></div>
+                <span class="ps2-metric-val">71%</span>
+              </div>
+            </div>
+            <div class="ps2-tag">
+              <span class="ps2-tag-item tag-blue">Ectomorph</span>
+              <span class="ps2-tag-item tag-orange">Focus: Shoulders</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Phone 3: Training Plan -->
+      <div class="preview-phone side-right">
+        <div class="preview-screen narrow">
+          <div class="ps3">
+            <div class="ps3-header">
+              <div class="ps3-title">Training Plan</div>
+              <div class="ps3-sub">Week 1 · Shoulder Focus</div>
+            </div>
+            <div class="ps3-day">
+              <div class="ps3-day-btn active">Mon</div>
+              <div class="ps3-day-btn">Tue</div>
+              <div class="ps3-day-btn">Wed</div>
+              <div class="ps3-day-btn">Thu</div>
+              <div class="ps3-day-btn">Fri</div>
+            </div>
+            <div class="ps3-exercises">
+              <div class="ps3-ex">
+                <div class="ps3-ex-num">1</div>
+                <div class="ps3-ex-info">
+                  <div class="ps3-ex-name">Overhead Press</div>
+                  <div class="ps3-ex-sets">4 × 8 reps · 2 min rest</div>
+                </div>
+                <span class="ps3-ex-muscle">Shoulder</span>
+              </div>
+              <div class="ps3-ex">
+                <div class="ps3-ex-num">2</div>
+                <div class="ps3-ex-info">
+                  <div class="ps3-ex-name">Lateral Raise</div>
+                  <div class="ps3-ex-sets">3 × 12 reps · 60s rest</div>
+                </div>
+                <span class="ps3-ex-muscle">Deltoid</span>
+              </div>
+              <div class="ps3-ex">
+                <div class="ps3-ex-num">3</div>
+                <div class="ps3-ex-info">
+                  <div class="ps3-ex-name">Arnold Press</div>
+                  <div class="ps3-ex-sets">3 × 10 reps · 90s rest</div>
+                </div>
+                <span class="ps3-ex-muscle">Shoulder</span>
+              </div>
+              <div class="ps3-ex">
+                <div class="ps3-ex-num">4</div>
+                <div class="ps3-ex-info">
+                  <div class="ps3-ex-name">Face Pulls</div>
+                  <div class="ps3-ex-sets">4 × 15 reps · 60s rest</div>
+                </div>
+                <span class="ps3-ex-muscle">Rear Delt</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Vision ─────────────────────────────────────────────────── -->
+<section id="vision">
+  <div class="container">
+    <span class="section-label vision-label reveal">Our Vision</span>
+    <h2 class="vision-title reveal reveal-delay-1">
+      Built for the <span>Future</span><br />of Fitness
+    </h2>
+    <p class="vision-text reveal reveal-delay-2">
+      MuscleAPP is currently in active development. We're building the AI engine that will replace generic training plans forever, giving every person the precision guidance that only elite athletes have had access to. Until now.
+    </p>
+    <div class="vision-pills reveal reveal-delay-3">
+      <div class="vision-pill"><div class="vision-pill-dot"></div> AI Body Composition Engine</div>
+      <div class="vision-pill"><div class="vision-pill-dot" style="background:#00c896"></div> Real-Time Plan Adaptation</div>
+      <div class="vision-pill"><div class="vision-pill-dot" style="background:#f5a623"></div> Precision Over Guesswork</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Waitlist ────────────────────────────────────────────────── -->
+<section id="waitlist">
+  <div class="container">
+    <div class="waitlist-box">
+      <div class="waitlist-count reveal">
+        <div class="count-avatars">
+          <div class="count-avatar ca-1">D</div>
+          <div class="count-avatar ca-2">M</div>
+          <div class="count-avatar ca-3">J</div>
+        </div>
+        <span>2,400+ people already waiting</span>
+      </div>
+      <h2 class="waitlist-title reveal reveal-delay-1">Be First When We Launch</h2>
+      <p class="waitlist-sub reveal reveal-delay-2">
+        Get early access, exclusive launch pricing, and be the first to experience AI-powered body transformation.
+      </p>
+      <form class="waitlist-form reveal reveal-delay-3" id="mc-form" onsubmit="handleWaitlist(event)">
+        <input class="waitlist-input" type="email" placeholder="Enter your email" id="waitlist-email" name="EMAIL" required autocomplete="email" />
+        <!-- Mailchimp honeypot (anti-bot) -->
+        <div style="position:absolute;left:-5000px" aria-hidden="true">
+          <input type="text" name="b_2cbd06cd6bbc177d0fd2661ec_ec6220c715" tabindex="-1" value="" />
+        </div>
+        <button type="submit" class="btn-primary" id="waitlist-btn">Join Waitlist</button>
+      </form>
+      <p class="waitlist-note reveal reveal-delay-4">No spam, ever. Unsubscribe anytime.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ─────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-brand-row">
+        <img src="logo.png" alt="MuscleAPP" class="footer-logo-img" />
+        <span class="footer-brand-name">MuscleAPP</span>
+      </div>
+      <p class="footer-tagline">AI-powered body scanning and personalised fitness coaching.</p>
+    </div>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">&copy; 2026 MuscleAPP. All rights reserved.</span>
+  </div>
+</footer>
+
+<!-- ─── Scripts ─────────────────────────────────────────────────── -->
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '20px 0px -20px 0px' });
+  reveals.forEach(el => observer.observe(el));
+
+  // Fallback: reveal hero elements immediately on load
+  requestAnimationFrame(() => {
+    document.querySelectorAll('#hero .reveal').forEach(el => el.classList.add('visible'));
+  });
+
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      navbar.style.boxShadow = '0 2px 24px rgba(0,0,0,0.3)';
+    } else {
+      navbar.style.boxShadow = 'none';
+    }
+  });
+
+  // Mailchimp waitlist form (JSONP)
+  function handleWaitlist(e) {
+    e.preventDefault();
+    const input = document.getElementById('waitlist-email');
+    const btn = document.getElementById('waitlist-btn');
+    const email = input.value;
+
+    if (!email) return;
+
+    // Disable while submitting
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    input.disabled = true;
+
+    // Build Mailchimp JSONP URL
+    const baseUrl = 'https://gmail.us11.list-manage.com/subscribe/post-json';
+    const params = new URLSearchParams({
+      u: '2cbd06cd6bbc177d0fd2661ec',
+      id: 'ec6220c715',
+      f_id: '00391ae1f0',
+      EMAIL: email,
+      b_2cbd06cd6bbc177d0fd2661ec_ec6220c715: '' // honeypot
+    });
+
+    // Unique JSONP callback name
+    const cbName = 'mc_cb_' + Date.now();
+    window[cbName] = function(resp) {
+      // Clean up
+      delete window[cbName];
+      const script = document.getElementById('mc-jsonp');
+      if (script) script.remove();
+
+      if (resp.result === 'success') {
+        btn.textContent = 'You are on the list!';
+        btn.style.background = '#00c896';
+        btn.style.boxShadow = '0 8px 24px rgba(0,200,150,0.3)';
+        input.value = '';
+        input.placeholder = 'Welcome aboard!';
+      } else {
+        // Already subscribed is still a win
+        if (resp.msg && resp.msg.includes('already subscribed')) {
+          btn.textContent = 'Already on the list!';
+          btn.style.background = '#0066ff';
+          input.value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.style.background = '#e53e3e';
+        }
+      }
+
+      setTimeout(() => {
+        btn.textContent = 'Join Waitlist';
+        btn.style.background = '';
+        btn.style.boxShadow = '';
+        input.placeholder = 'Enter your email';
+        input.disabled = false;
+        btn.disabled = false;
+      }, 4000);
+    };
+
+    // Inject JSONP script tag
+    const script = document.createElement('script');
+    script.id = 'mc-jsonp';
+    script.src = baseUrl + '?' + params.toString() + '&c=' + cbName;
+    document.body.appendChild(script);
+
+    // Timeout fallback
+    setTimeout(() => {
+      if (window[cbName]) {
+        window[cbName]({ result: 'error', msg: 'Timeout' });
+      }
+    }, 8000);
+  }
+
+  // Stagger scan dots animation
+  const dots = document.querySelectorAll('.scan-dot');
+  let currentDot = 0;
+  setInterval(() => {
+    dots.forEach(d => d.classList.remove('active'));
+    currentDot = (currentDot + 1) % dots.length;
+    for (let i = 0; i <= currentDot; i++) dots[i].classList.add('active');
+  }, 800);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy | MuscleAPP</title>
+  <meta name="description" content="MuscleAPP Privacy Policy. How we handle your data, photos, and payments." />
+  <link rel="icon" href="logo.png.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #0a0a0a;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --blue: #0066ff;
+      --blue-glow: rgba(0,102,255,0.18);
+      --green: #00c896;
+      --orange: #f5a623;
+      --red: #e53e3e;
+      --purple: #8250df;
+      --gray-50: #f9f9f9;
+      --gray-100: #f3f3f3;
+      --gray-200: #e8e8e8;
+      --gray-500: #888;
+      --gray-700: #444;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 24px 64px rgba(0,0,0,0.12);
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─── Animated background ─── */
+    .bg-mesh {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; pointer-events: none; overflow: hidden;
+    }
+    .bg-mesh .orb {
+      position: absolute; border-radius: 50%; filter: blur(100px);
+      opacity: 0.18; will-change: transform;
+    }
+    .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #3b82f6, transparent 70%); top: -10%; left: -10%; animation: orb1 20s ease-in-out infinite; }
+    .orb-2 { width: 450px; height: 450px; background: radial-gradient(circle, #00c896, transparent 70%); bottom: 5%; right: -5%; animation: orb2 26s ease-in-out infinite; }
+    .orb-3 { width: 350px; height: 350px; background: radial-gradient(circle, #8b5cf6, transparent 70%); top: 40%; left: 35%; animation: orb3 22s ease-in-out infinite; }
+    @keyframes orb1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(80px,90px) scale(1.1)} }
+    @keyframes orb2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-60px,-70px) scale(1.08)} }
+    @keyframes orb3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(50px,-60px) scale(0.92)} }
+
+    /* ─── Scroll reveal ─── */
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .reveal-d1{transition-delay:0.1s} .reveal-d2{transition-delay:0.18s} .reveal-d3{transition-delay:0.26s} .reveal-d4{transition-delay:0.34s}
+
+    /* ─── Navbar ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 0;
+      background: rgba(20,20,20,0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      transition: var(--transition);
+    }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; max-width:1120px; margin:0 auto; padding:0 24px; }
+    .nav-logo { display:flex; align-items:center; text-decoration:none; }
+    .nav-logo-img { height:52px; width:auto; object-fit:contain; }
+    .nav-links { display:flex; align-items:center; gap:10px; }
+    .nav-link { color:rgba(255,255,255,0.75); text-decoration:none; font-size:13px; font-weight:600; padding:8px 14px; border-radius:18px; border:1px solid transparent; transition:var(--transition); }
+    .nav-link:hover { color:#fff; background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.12); }
+    .nav-link.active { color:#0a0a0a; background:#fff; }
+
+    /* ─── Hero ─── */
+    .privacy-hero {
+      padding: 148px 0 80px;
+      text-align: center;
+      position: relative;
+      background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, transparent 100%);
+      border-bottom: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+    .privacy-hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,102,255,0.06) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .hero-grid-lines {
+      position:absolute; inset:0; z-index:0; pointer-events:none;
+      background-image: linear-gradient(rgba(0,102,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,102,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+    .privacy-hero .container { position:relative; z-index:1; }
+    .privacy-eyebrow {
+      display:inline-flex; align-items:center; gap:7px;
+      background:var(--gray-100); border:1px solid var(--gray-200);
+      padding:6px 14px; border-radius:20px;
+      font-size:11px; font-weight:700; color:var(--blue);
+      margin-bottom:20px; letter-spacing:1px; text-transform:uppercase;
+    }
+    .privacy-eyebrow-dot { width:6px; height:6px; border-radius:50%; background:var(--blue); animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+    .privacy-title {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 900; letter-spacing: -3px; line-height: 1.05;
+      color: #0a0a0a; margin-bottom: 16px;
+    }
+    .privacy-title span { color: var(--blue); }
+    .privacy-sub { font-size:17px; color:var(--gray-500); max-width:520px; margin:0 auto; line-height:1.65; }
+    .privacy-updated {
+      display:inline-flex; align-items:center; gap:6px;
+      margin-top:20px; font-size:12px; font-weight:600; color:var(--gray-500);
+    }
+    .privacy-updated-dot { width:5px; height:5px; border-radius:50%; background:var(--green); }
+
+    /* ─── Trust stats bar ─── */
+    .trust-bar {
+      background: #0a0a0a;
+      padding: 28px 0;
+    }
+    .trust-inner { max-width:1120px; margin:0 auto; padding:0 24px; display:flex; align-items:center; justify-content:center; gap:0; flex-wrap:wrap; }
+    .trust-stat { text-align:center; padding:0 48px; position:relative; }
+    .trust-stat + .trust-stat::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); height:32px; width:1px; background:rgba(255,255,255,0.1); }
+    .trust-num { font-size:28px; font-weight:900; color:#fff; letter-spacing:-1px; }
+    .trust-num span { color:var(--blue); }
+    .trust-label { font-size:12px; color:rgba(255,255,255,0.45); font-weight:500; margin-top:2px; }
+
+    /* ─── Layout ─── */
+    .container { max-width:1120px; margin:0 auto; padding:0 24px; }
+    .privacy-layout {
+      display: grid; grid-template-columns: 240px 1fr;
+      gap: 56px; padding: 80px 0 120px; align-items: start;
+    }
+
+    /* ─── Sidebar ─── */
+    .toc {
+      position:sticky; top:96px; z-index:10;
+      background:#fff; border:1px solid var(--gray-200);
+      border-radius:var(--radius-md); padding:24px;
+      box-shadow: var(--shadow-md);
+    }
+    .toc-title { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gray-500); margin-bottom:14px; }
+    .toc-list { list-style:none; display:flex; flex-direction:column; gap:2px; }
+    .toc-list a {
+      display:flex; align-items:center; gap:8px; font-size:13px; font-weight:500;
+      color:var(--gray-700); text-decoration:none;
+      padding:8px 10px; border-radius:10px; transition:var(--transition);
+    }
+    .toc-list a:hover { background:var(--gray-50); color:var(--blue); }
+    .toc-list a .toc-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+    /* ─── Content ─── */
+    .privacy-content { display:flex; flex-direction:column; gap:56px; }
+    .policy-section { scroll-margin-top:104px; }
+
+    /* Section tag */
+    .section-tag {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:10px; font-weight:700; letter-spacing:1px;
+      text-transform:uppercase; padding:5px 12px; border-radius:20px; margin-bottom:14px;
+    }
+    .tag-blue   { background:rgba(0,102,255,0.08);  color:#0066ff; border:1px solid rgba(0,102,255,0.15); }
+    .tag-green  { background:rgba(0,200,150,0.1);   color:#00a87a; border:1px solid rgba(0,200,150,0.2); }
+    .tag-orange { background:rgba(245,166,35,0.1);  color:#c98700; border:1px solid rgba(245,166,35,0.2); }
+    .tag-red    { background:rgba(229,62,62,0.08);  color:#c53030; border:1px solid rgba(229,62,62,0.15); }
+    .tag-purple { background:rgba(130,80,255,0.08); color:#7c3aed; border:1px solid rgba(130,80,255,0.15); }
+    .tag-gray   { background:rgba(100,100,100,0.06);color:#555;    border:1px solid rgba(100,100,100,0.12); }
+
+    .policy-section h2 {
+      font-size:28px; font-weight:900; letter-spacing:-1px;
+      color:#0a0a0a; margin-bottom:16px; line-height:1.15;
+    }
+    .policy-section p { font-size:15px; color:var(--gray-700); line-height:1.8; margin-bottom:14px; }
+    .policy-section p:last-child { margin-bottom:0; }
+
+    /* ─── Section divider ─── */
+    .section-divider { height:1px; background:linear-gradient(90deg, transparent, var(--gray-200) 20%, var(--gray-200) 80%, transparent); }
+
+    /* ─── Highlight cards ─── */
+    .highlight-card {
+      border-radius:var(--radius-md); padding:20px 24px;
+      margin:20px 0; display:flex; gap:16px; align-items:flex-start;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .highlight-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+    .hc-blue   { background:rgba(0,102,255,0.04);  border:1px solid rgba(0,102,255,0.15); }
+    .hc-green  { background:rgba(0,200,150,0.04);  border:1px solid rgba(0,200,150,0.2); }
+    .hc-orange { background:rgba(245,166,35,0.05); border:1px solid rgba(245,166,35,0.2); }
+    .hc-red    { background:rgba(229,62,62,0.04);  border:1px solid rgba(229,62,62,0.15); }
+    .hc-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .hci-blue   { background:rgba(0,102,255,0.12); }
+    .hci-green  { background:rgba(0,200,150,0.12); }
+    .hci-orange { background:rgba(245,166,35,0.12); }
+    .hci-red    { background:rgba(229,62,62,0.1); }
+    .hc-title { font-size:14px; font-weight:700; margin-bottom:5px; }
+    .hc-blue   .hc-title { color:#0055dd; }
+    .hc-green  .hc-title { color:#00875f; }
+    .hc-orange .hc-title { color:#a07000; }
+    .hc-red    .hc-title { color:#b91c1c; }
+    .hc-text { font-size:14px; line-height:1.65; color:var(--gray-700); }
+
+    /* ─── Lists ─── */
+    .policy-list { list-style:none; display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+    .policy-list li { display:flex; align-items:flex-start; gap:10px; font-size:15px; color:var(--gray-700); line-height:1.6; }
+    .li-dot { width:6px; height:6px; border-radius:50%; background:var(--blue); flex-shrink:0; margin-top:8px; }
+    .li-dot.green  { background:var(--green); }
+    .li-dot.orange { background:var(--orange); }
+    .li-dot.red    { background:var(--red); }
+
+    /* ─── Feature grid (photo section) ─── */
+    .feature-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+    .feat-card {
+      background:var(--gray-50); border:1px solid var(--gray-200);
+      border-radius:var(--radius-md); padding:18px;
+      transition:var(--transition);
+    }
+    .feat-card:hover { background:#fff; box-shadow:var(--shadow-md); border-color:transparent; transform:translateY(-2px); }
+    .feat-icon { font-size:22px; margin-bottom:8px; }
+    .feat-title { font-size:13px; font-weight:700; color:#0a0a0a; margin-bottom:4px; }
+    .feat-desc { font-size:12px; color:var(--gray-500); line-height:1.55; }
+
+    /* ─── Data table ─── */
+    .data-table { width:100%; border-collapse:collapse; margin:16px 0; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--gray-200); }
+    .data-table th { background:#0a0a0a; color:#fff; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; padding:12px 16px; text-align:left; }
+    .data-table td { padding:12px 16px; font-size:14px; color:var(--gray-700); border-bottom:1px solid var(--gray-100); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:nth-child(even) td { background:var(--gray-50); }
+    .data-badge { display:inline-flex; padding:3px 8px; border-radius:6px; font-size:10px; font-weight:700; }
+    .badge-yes { background:rgba(0,200,150,0.1); color:#00875f; }
+    .badge-no  { background:rgba(229,62,62,0.08); color:#c53030; }
+
+    /* ─── Timeline (retention) ─── */
+    .retention-timeline { display:flex; flex-direction:column; gap:0; margin:20px 0; position:relative; padding-left:28px; }
+    .retention-timeline::before { content:''; position:absolute; left:13px; top:8px; bottom:8px; width:2px; background:linear-gradient(to bottom, var(--orange), rgba(245,166,35,0.1)); border-radius:1px; }
+    .rt-item { position:relative; padding:0 0 20px 16px; }
+    .rt-item:last-child { padding-bottom:0; }
+    .rt-dot { position:absolute; left:-22px; top:4px; width:14px; height:14px; border-radius:50%; background:#fff; border:2px solid var(--orange); display:flex; align-items:center; justify-content:center; }
+    .rt-dot.filled { background:var(--orange); }
+    .rt-dot.filled::after { content:''; width:4px; height:4px; border-radius:50%; background:#fff; }
+    .rt-label { font-size:12px; font-weight:700; color:var(--orange); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+    .rt-text { font-size:14px; color:var(--gray-700); line-height:1.55; }
+
+    /* ─── Security badges ─── */
+    .security-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0; }
+    .sec-badge {
+      background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius-md);
+      padding:20px 16px; text-align:center; transition:var(--transition);
+    }
+    .sec-badge:hover { box-shadow:var(--shadow-md); border-color:rgba(0,102,255,0.15); transform:translateY(-3px); }
+    .sec-badge-icon { font-size:28px; margin-bottom:10px; }
+    .sec-badge-title { font-size:12px; font-weight:700; color:#0a0a0a; margin-bottom:4px; }
+    .sec-badge-sub { font-size:11px; color:var(--gray-500); line-height:1.4; }
+
+    /* ─── Rights grid ─── */
+    .rights-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+    .right-card {
+      display:flex; gap:12px; align-items:flex-start;
+      background:var(--gray-50); border:1px solid var(--gray-200);
+      border-radius:12px; padding:16px; transition:var(--transition);
+    }
+    .right-card:hover { background:#fff; box-shadow:var(--shadow-md); border-color:transparent; }
+    .right-icon { width:32px; height:32px; border-radius:9px; background:rgba(0,102,255,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:15px; }
+    .right-title { font-size:13px; font-weight:700; color:#0a0a0a; margin-bottom:3px; }
+    .right-desc { font-size:12px; color:var(--gray-500); line-height:1.5; }
+
+    /* ─── Refund callout pills ─── */
+    .refund-cols { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+    .refund-col { border-radius:var(--radius-md); padding:20px; }
+    .refund-col-yes { background:rgba(0,200,150,0.04); border:1px solid rgba(0,200,150,0.2); }
+    .refund-col-no  { background:rgba(229,62,62,0.04);  border:1px solid rgba(229,62,62,0.15); }
+    .refund-col-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:12px; }
+    .refund-col-yes .refund-col-title { color:#00875f; }
+    .refund-col-no  .refund-col-title { color:#c53030; }
+    .refund-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .refund-list li { display:flex; align-items:flex-start; gap:8px; font-size:13px; color:var(--gray-700); line-height:1.5; }
+    .refund-list li::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-top:7px; }
+    .refund-col-yes .refund-list li::before { background:var(--green); }
+    .refund-col-no  .refund-list li::before { background:var(--red); }
+
+    /* ─── Footer ─── */
+    footer { background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.08); }
+    .footer-main { max-width:1120px; margin:0 auto; padding:48px 24px 40px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:32px; }
+    .footer-brand { display:flex; flex-direction:column; gap:10px; }
+    .footer-brand-row { display:flex; align-items:center; gap:10px; }
+    .footer-logo-img { height:28px; width:auto; object-fit:contain; }
+    .footer-brand-name { font-size:15px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+    .footer-tagline { font-size:13px; color:rgba(255,255,255,0.4); max-width:220px; line-height:1.5; }
+    .footer-links { display:flex; gap:28px; align-items:center; padding-top:4px; }
+    .footer-links a { font-size:13px; color:rgba(255,255,255,0.45); text-decoration:none; transition:var(--transition); font-weight:500; }
+    .footer-links a:hover { color:#fff; }
+    .footer-links a.active { color:#fff; }
+    .footer-bottom { border-top:1px solid rgba(255,255,255,0.07); max-width:1120px; margin:0 auto; padding:18px 24px; display:flex; align-items:center; justify-content:center; }
+    .footer-copy { font-size:12px; color:rgba(255,255,255,0.25); }
+
+    /* ─── Responsive ─── */
+    @media (max-width:900px) {
+      .privacy-layout { grid-template-columns:1fr; gap:32px; }
+      .toc { position:static; }
+      .security-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:640px) {
+      .privacy-hero { padding:120px 0 60px; }
+      .privacy-title { letter-spacing:-1.5px; }
+      .feature-grid, .rights-grid, .refund-cols { grid-template-columns:1fr; }
+      .trust-stat { padding:12px 24px; }
+      .security-grid { grid-template-columns:1fr; }
+      .nav-links { gap:4px; }
+      .nav-link { padding:6px 10px; font-size:12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-mesh">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- Navbar -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="logo.png.png" alt="MuscleAPP" class="nav-logo-img" />
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="privacy.html" class="nav-link active">Privacy</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="waitlist.html" class="nav-link">Waitlist</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="privacy-hero">
+  <div class="hero-grid-lines"></div>
+  <div class="container">
+    <div class="privacy-eyebrow reveal"><div class="privacy-eyebrow-dot"></div>Legal</div>
+    <h1 class="privacy-title reveal reveal-d1">Your Privacy,<br><span>Our Priority.</span></h1>
+    <p class="privacy-sub reveal reveal-d2">We are committed to protecting your data, your photos, and your trust. Here's exactly how we do it.</p>
+    <div class="privacy-updated reveal reveal-d3"><div class="privacy-updated-dot"></div>Last updated: April 1, 2026</div>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="container">
+  <div class="privacy-layout">
+
+    <!-- Sidebar TOC -->
+    <aside>
+      <nav class="toc" aria-label="Table of contents">
+        <div class="toc-title">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#overview"><span class="toc-dot" style="background:#0066ff"></span>Overview</a></li>
+          <li><a href="#photo-privacy"><span class="toc-dot" style="background:#00c896"></span>Your Photos</a></li>
+          <li><a href="#data-storage"><span class="toc-dot" style="background:#f5a623"></span>Data Storage</a></li>
+          <li><a href="#data-collected"><span class="toc-dot" style="background:#0066ff"></span>Data We Collect</a></li>
+
+          <li><a href="#your-rights"><span class="toc-dot" style="background:#888"></span>Your Rights</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="privacy-content">
+
+      <!-- Overview -->
+      <section class="policy-section reveal" id="overview">
+        <span class="section-tag tag-blue">Overview</span>
+        <h2>Our Commitment to Your Privacy</h2>
+        <p>
+          MuscleAPP ("we", "us", "our") is an AI-powered fitness application currently in active development.
+          This Privacy Policy explains what data we collect, how we use it, and the protections we put in place
+          to keep it safe.
+        </p>
+        <p>
+          By using MuscleAPP and related services, you agree to the practices described in this
+          policy. We will notify you of any material changes via email before they take effect.
+        </p>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Photo Privacy -->
+      <section class="policy-section reveal" id="photo-privacy">
+        <span class="section-tag tag-green">Your Photos</span>
+        <h2>Photo Privacy: Only You Have Access</h2>
+
+        <div class="highlight-card hc-green">
+          <div class="hc-icon hci-green">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2C10 2 5 6 5 11a5 5 0 0010 0C15 6 10 2 10 2z" stroke="#00c896" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M7 11c0 1.65 1.35 3 3 3s3-1.35 3-3" stroke="#00c896" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="hc-body">
+            <div class="hc-title">Zero-Access Photo Policy</div>
+            <div class="hc-text">Photos you take or upload through MuscleAPP are <strong>strictly private to you</strong>. No MuscleAPP employee, contractor, or third party can view, access, or retrieve your photos. Ever.</div>
+          </div>
+        </div>
+
+        <p>Your body scan photos are processed locally on your device or transmitted over an encrypted channel for AI analysis. The analysis result (numerical metrics like body fat %, muscle scores) is stored on our servers, but <strong>the original photos are never stored on our servers</strong> beyond the duration required for real-time processing.</p>
+        <p>We do not sell, license, share, or otherwise disclose your photos to any third party. We do not use your photos to train AI models unless you provide explicit, separate, and revocable consent.</p>
+
+        <div class="feature-grid">
+          <div class="feat-card reveal reveal-d1">
+            <div class="feat-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="9" rx="2" stroke="#00c896" stroke-width="1.6"/><path d="M7 9V6a3 3 0 016 0v3" stroke="#00c896" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="13.5" r="1.5" fill="#00c896"/></svg></div>
+            <div class="feat-title">No employee access</div>
+            <div class="feat-desc">No team member or contractor can view your photos, ever.</div>
+          </div>
+          <div class="feat-card reveal reveal-d2">
+            <div class="feat-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#e53e3e" stroke-width="1.6"/><path d="M5 15L15 5" stroke="#e53e3e" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+            <div class="feat-title">Not stored on servers</div>
+            <div class="feat-desc">Photos are purged immediately after real-time processing completes.</div>
+          </div>
+          <div class="feat-card reveal reveal-d3">
+            <div class="feat-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4" y="6" width="12" height="10" rx="2" stroke="#8250ff" stroke-width="1.6"/><circle cx="7.5" cy="11" r="1.2" fill="#8250ff"/><circle cx="12.5" cy="11" r="1.2" fill="#8250ff"/><path d="M10 3v3M7 3h6" stroke="#8250ff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+            <div class="feat-title">No AI training</div>
+            <div class="feat-desc">Your photos are never used to train models without explicit consent.</div>
+          </div>
+          <div class="feat-card reveal reveal-d4">
+            <div class="feat-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v6c0 4 3 7 7 8 4-1 7-4 7-8V6l-7-4z" stroke="#0066ff" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="#0066ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="feat-title">Encrypted in transit</div>
+            <div class="feat-desc">All photo transmission is encrypted end-to-end during processing.</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Data Storage -->
+      <section class="policy-section reveal" id="data-storage">
+        <span class="section-tag tag-orange">Data Storage</span>
+        <h2>Data Retention: 90-Day Policy</h2>
+
+        <div class="highlight-card hc-orange">
+          <div class="hc-icon hci-orange">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="#f5a623" stroke-width="1.6"/>
+              <path d="M10 5.5v5l3 3" stroke="#f5a623" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="hc-body">
+            <div class="hc-title">Data stored for 90 days maximum</div>
+            <div class="hc-text">Your personal data, analysis results, and account activity are retained for a maximum of <strong>90 days</strong> from the date of creation or last activity, after which they are permanently and irreversibly deleted.</div>
+          </div>
+        </div>
+
+        <div class="retention-timeline">
+          <div class="rt-item">
+            <div class="rt-dot filled"></div>
+            <div class="rt-label">Day 0: Data Created</div>
+            <div class="rt-text">Analysis results, metrics, and workout history are stored securely.</div>
+          </div>
+          <div class="rt-item">
+            <div class="rt-dot"></div>
+            <div class="rt-label">Day 90: Auto Deletion</div>
+            <div class="rt-text">All associated data is permanently and irreversibly purged from our systems.</div>
+          </div>
+          <div class="rt-item">
+            <div class="rt-dot"></div>
+            <div class="rt-label">Account Deletion: 7 Business Days</div>
+            <div class="rt-text">If you delete your account, all data is removed within 7 business days. Backups purged within 30 days.</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- Data Collected -->
+      <section class="policy-section reveal" id="data-collected">
+        <span class="section-tag tag-blue">Data Collection</span>
+        <h2>What Data We Collect</h2>
+        <p>We collect only the minimum data required to provide the MuscleAPP service.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data Type</th>
+              <th>What We Collect</th>
+              <th>Stored?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Account</strong></td>
+              <td>Email address and display name</td>
+              <td><span class="data-badge badge-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>Body Metrics</strong></td>
+              <td>Numerical outputs (body fat %, muscle scores), not raw photos</td>
+              <td><span class="data-badge badge-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>Photos</strong></td>
+              <td>Processed in real-time only</td>
+              <td><span class="data-badge badge-no">Never</span></td>
+            </tr>
+            <tr>
+              <td><strong>Usage Data</strong></td>
+              <td>Anonymised feature logs and crash reports</td>
+              <td><span class="data-badge badge-yes">Yes</span></td>
+            </tr>
+
+            <tr>
+              <td><strong>Device</strong></td>
+              <td>Device model, OS version, app version</td>
+              <td><span class="data-badge badge-yes">Yes</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>We do not collect your location, contacts, biometric identifiers beyond the body scan metrics described above, or any other sensitive data without your explicit consent.</p>
+      </section>
+
+
+
+      <div class="section-divider"></div>
+
+      <!-- Your Rights -->
+      <section class="policy-section reveal" id="your-rights">
+        <span class="section-tag tag-gray">Your Rights</span>
+        <h2>Your Rights &amp; Choices</h2>
+        <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+
+        <div class="rights-grid">
+          <div class="right-card reveal reveal-d1">
+            <div class="right-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="1" width="12" height="16" rx="2" stroke="#0066ff" stroke-width="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#0066ff" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div>
+              <div class="right-title">Access</div>
+              <div class="right-desc">Request a copy of the personal data we hold about you</div>
+            </div>
+          </div>
+          <div class="right-card reveal reveal-d2">
+            <div class="right-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 3l4 4-9 9H2v-4l9-9z" stroke="#f5a623" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="right-title">Correction</div>
+              <div class="right-desc">Request correction of any inaccurate personal data</div>
+            </div>
+          </div>
+          <div class="right-card reveal reveal-d1">
+            <div class="right-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 5h12M7 5V3h4v2M5 5v10a2 2 0 002 2h4a2 2 0 002-2V5" stroke="#e53e3e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="right-title">Deletion</div>
+              <div class="right-desc">Request permanent deletion of your account and all associated data</div>
+            </div>
+          </div>
+          <div class="right-card reveal reveal-d2">
+            <div class="right-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 6l7 4 7-4M2 6l7-4 7 4v8l-7 4-7-4V6z" stroke="#00c896" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 10v8" stroke="#00c896" stroke-width="1.4"/></svg></div>
+            <div>
+              <div class="right-title">Portability</div>
+              <div class="right-desc">Request your data in a structured, machine-readable format</div>
+            </div>
+          </div>
+          <div class="right-card reveal reveal-d1">
+            <div class="right-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="5" r="3" stroke="#f5a623" stroke-width="1.4"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#f5a623" stroke-width="1.4" stroke-linecap="round"/><path d="M13 3l-8 12" stroke="#f5a623" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div>
+              <div class="right-title">Objection</div>
+              <div class="right-desc">Object to processing of your data for marketing purposes at any time</div>
+            </div>
+          </div>
+          <div class="right-card reveal reveal-d2">
+            <div class="right-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 8h8a4 4 0 010 8H8" stroke="#0066ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 5L4 8l3 3" stroke="#0066ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="right-title">Withdraw Consent</div>
+              <div class="right-desc">Withdraw any previously given consent at any time</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-brand-row">
+        <img src="logo.png.png" alt="MuscleAPP" class="footer-logo-img" />
+        <span class="footer-brand-name">MuscleAPP</span>
+      </div>
+      <p class="footer-tagline">AI-powered body scanning and personalised fitness coaching.</p>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="privacy.html" class="active">Privacy</a>
+      <a href="contact.html">Contact</a>
+      <a href="waitlist.html">Waitlist</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">&copy; 2026 MuscleAPP. All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll
+  const navbar = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    navbar.style.boxShadow = window.scrollY > 20 ? '0 2px 24px rgba(0,0,0,0.3)' : 'none';
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Active TOC highlight
+  const sections = document.querySelectorAll('.policy-section');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const tocObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(a => a.style.color = '');
+        const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+        if (active) active.style.color = '#0066ff';
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => tocObserver.observe(s));
+</script>
+
+</body>
+</html>

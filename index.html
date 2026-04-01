@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MuscleAPP — AI-Powered Body Scanning</title>
+  <title>MuscleAPP | AI-Powered Body Scanning</title>
   <meta name="description" content="MuscleAPP analyzes your body, detects muscle mass and fat, and builds your perfect personalized training plan." />
-  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="icon" href="logo.png.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -22,58 +22,74 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── Animated Background Mesh ──────────────────────────────── */
+    /* ─── Animated Background ────────────────────────────────────── */
     .bg-mesh {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: -1; pointer-events: none; overflow: hidden;
+      z-index: -2; pointer-events: none; overflow: hidden;
+      background: #ffffff;
     }
+
+    /* Dot-grid canvas sits behind everything */
+    #bg-canvas {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -2; pointer-events: none;
+    }
+
+    /* Aurora orbs */
     .bg-mesh .orb {
-      position: absolute; border-radius: 50%; filter: blur(100px);
-      opacity: 0.35; will-change: transform;
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); will-change: transform;
     }
     .bg-mesh .orb-1 {
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(0,102,255,0.18), transparent 70%);
-      top: -10%; left: -8%;
-      animation: orb-drift-1 18s ease-in-out infinite;
+      width: 700px; height: 700px; opacity: 0.28;
+      background: radial-gradient(circle, #3b82f6, transparent 68%);
+      top: -18%; left: -12%;
+      animation: orb-drift-1 20s ease-in-out infinite;
     }
     .bg-mesh .orb-2 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(0,200,150,0.12), transparent 70%);
-      top: 30%; right: -10%;
-      animation: orb-drift-2 22s ease-in-out infinite;
+      width: 560px; height: 560px; opacity: 0.18;
+      background: radial-gradient(circle, #06b6d4, transparent 68%);
+      top: 10%; right: -14%;
+      animation: orb-drift-2 26s ease-in-out infinite;
     }
     .bg-mesh .orb-3 {
-      width: 450px; height: 450px;
-      background: radial-gradient(circle, rgba(245,166,35,0.10), transparent 70%);
-      bottom: 10%; left: 20%;
-      animation: orb-drift-3 20s ease-in-out infinite;
+      width: 500px; height: 500px; opacity: 0.14;
+      background: radial-gradient(circle, #8b5cf6, transparent 68%);
+      top: 40%; left: 30%;
+      animation: orb-drift-3 22s ease-in-out infinite;
     }
     .bg-mesh .orb-4 {
-      width: 350px; height: 350px;
-      background: radial-gradient(circle, rgba(130,80,255,0.10), transparent 70%);
-      top: 60%; right: 15%;
-      animation: orb-drift-4 25s ease-in-out infinite;
+      width: 420px; height: 420px; opacity: 0.13;
+      background: radial-gradient(circle, #10b981, transparent 68%);
+      bottom: 5%; right: 10%;
+      animation: orb-drift-4 28s ease-in-out infinite;
+    }
+    /* extra fifth orb for more depth */
+    .bg-mesh .orb-5 {
+      width: 380px; height: 380px; opacity: 0.10;
+      background: radial-gradient(circle, #f59e0b, transparent 68%);
+      bottom: 20%; left: -5%;
+      animation: orb-drift-1 32s ease-in-out infinite reverse;
     }
     @keyframes orb-drift-1 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(80px, 60px) scale(1.1); }
-      66% { transform: translate(-40px, 100px) scale(0.95); }
+      33%  { transform: translate(90px,  70px) scale(1.12); }
+      66%  { transform: translate(-50px, 110px) scale(0.93); }
     }
     @keyframes orb-drift-2 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(-70px, 50px) scale(0.9); }
-      66% { transform: translate(50px, -80px) scale(1.08); }
+      33%  { transform: translate(-80px, 55px) scale(0.88); }
+      66%  { transform: translate(60px, -90px) scale(1.1); }
     }
     @keyframes orb-drift-3 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(60px, -40px) scale(1.05); }
-      66% { transform: translate(-50px, -60px) scale(0.92); }
+      33%  { transform: translate(70px, -50px) scale(1.08); }
+      66%  { transform: translate(-60px, -70px) scale(0.9); }
     }
     @keyframes orb-drift-4 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(-40px, -50px) scale(1.1); }
-      66% { transform: translate(70px, 30px) scale(0.9); }
+      33%  { transform: translate(-50px, -60px) scale(1.13); }
+      66%  { transform: translate(80px,  35px)  scale(0.88); }
     }
 
     /* ─── CSS Variables ─────────────────────────────────────────── */
@@ -135,27 +151,47 @@
     .nav-logo-img {
       height: 52px; width: auto; object-fit: contain;
     }
-    .nav-badge {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
-      background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
-      padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);
-    }
-    .nav-cta {
-      background: #fff; color: #0a0a0a;
-      padding: 9px 20px; border-radius: 20px;
-      font-size: 13px; font-weight: 600; text-decoration: none;
+    .nav-links { display: flex; align-items: center; gap: 10px; }
+    .nav-link {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      padding: 8px 14px;
+      border-radius: 18px;
+      border: 1px solid transparent;
       transition: var(--transition);
     }
-    .nav-cta:hover { background: #e8e8e8; transform: translateY(-1px); }
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.12);
+    }
+    .nav-link.active {
+      color: #0a0a0a;
+      background: #fff;
+    }
 
     /* ─── Hero ───────────────────────────────────────────────────── */
     #hero {
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
       padding-top: 88px;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,102,255,0.05) 0%, transparent 70%);
+      background: transparent;
       overflow: hidden;
+      position: relative;
     }
+    /* Soft vignette that tightens the aurora light to the hero */
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% -10%, rgba(59,130,246,0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 50% at 85% 60%,  rgba(139,92,246,0.05) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    #hero > .container { position: relative; z-index: 1; }
     .hero-inner {
       display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
       align-items: center; width: 100%;
@@ -608,8 +644,8 @@
       max-width: 680px; margin: 0 auto; position: relative; padding-left: 32px;
     }
     .dev-log-timeline::before {
-      content: ''; position: absolute; left: 7px; top: 8px; bottom: 0;
-      width: 1px; background: linear-gradient(to bottom, #0066ff, rgba(0,102,255,0.1));
+      content: ''; position: absolute; left: 11px; top: 8px; bottom: 0;
+      width: 2px; background: linear-gradient(to bottom, #0066ff, rgba(0,102,255,0.1)); border-radius: 1px;
     }
     .dev-log-entry {
       position: relative; margin-bottom: 36px;
@@ -887,6 +923,266 @@
     .ps3-ex-sets { font-size: 9px; color: rgba(255,255,255,0.35); }
     .ps3-ex-muscle { font-size: 9px; font-weight: 700; color: #00c896; background: rgba(0,200,150,0.08); padding: 2px 6px; border-radius: 20px; }
 
+    /* ─── Stats strip ─────────────────────────────────────────────── */
+    #stats-strip {
+      background: #0a0a0a;
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    #stats-strip::before {
+      content:'';
+      position:absolute; top:-80px; left:50%; transform:translateX(-50%);
+      width:600px; height:200px; border-radius:50%;
+      background: radial-gradient(circle, rgba(0,102,255,0.12), transparent 70%);
+      pointer-events:none;
+    }
+    .stats-inner {
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-left: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat-block {
+      padding: 48px 32px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: relative; overflow: hidden;
+      transition: background var(--transition);
+    }
+    .stat-block:hover { background: rgba(255,255,255,0.02); }
+    .stat-block::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .stat-block:hover::before { opacity: 1; }
+    .sb-blue::before   { background: linear-gradient(90deg, #0066ff, #4d94ff); }
+    .sb-green::before  { background: linear-gradient(90deg, #00c896, #00f0b0); }
+    .sb-orange::before { background: linear-gradient(90deg, #f5a623, #ffcc66); }
+    .sb-purple::before { background: linear-gradient(90deg, #8250df, #c0a0ff); }
+    .stat-big {
+      font-size: 52px; font-weight: 900; letter-spacing: -2px;
+      line-height: 1; margin-bottom: 6px;
+      background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.5));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-big-accent { -webkit-text-fill-color: unset; }
+    .sb-blue   .stat-big-accent { color: #4d94ff; }
+    .sb-green  .stat-big-accent { color: #00c896; }
+    .sb-orange .stat-big-accent { color: #f5a623; }
+    .sb-purple .stat-big-accent { color: #c0a0ff; }
+    .stat-block-label {
+      font-size: 14px; font-weight: 500;
+      color: rgba(255,255,255,0.45); line-height: 1.4;
+    }
+    .stat-block-sup {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 10px;
+    }
+    .sb-blue   .stat-block-sup { color: #4d94ff; }
+    .sb-green  .stat-block-sup { color: #00c896; }
+    .sb-orange .stat-block-sup { color: #f5a623; }
+    .sb-purple .stat-block-sup { color: #c0a0ff; }
+
+    /* ─── Upgraded Steps ─────────────────────────────────────────── */
+    .step-card {
+      background: #fff; border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 36px 28px 32px;
+      text-align: center; position: relative; z-index: 1;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+    .step-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .step-card:nth-child(1)::after { background: linear-gradient(90deg, #0066ff, #4d94ff); }
+    .step-card:nth-child(2)::after { background: linear-gradient(90deg, #00c896, #00f0b0); }
+    .step-card:nth-child(3)::after { background: linear-gradient(90deg, #f5a623, #ffcc66); }
+    .step-card:hover::after { opacity: 1; }
+    .step-card:hover {
+      box-shadow: 0 16px 48px rgba(0,0,0,0.12); border-color: transparent;
+      transform: translateY(-6px);
+    }
+    .step-num {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; margin: 0 auto 20px;
+      position: relative;
+    }
+    .step-num-1 { background: rgba(0,102,255,0.08); color: #0066ff; border: 2px solid rgba(0,102,255,0.2); box-shadow: 0 0 0 6px rgba(0,102,255,0.04); }
+    .step-num-2 { background: rgba(0,200,150,0.08); color: #00c896; border: 2px solid rgba(0,200,150,0.2); box-shadow: 0 0 0 6px rgba(0,200,150,0.04); }
+    .step-num-3 { background: rgba(255,160,0,0.08); color: #f5a623; border: 2px solid rgba(255,160,0,0.2); box-shadow: 0 0 0 6px rgba(255,160,0,0.04); }
+    .step-title { font-size: 18px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 10px; }
+    .step-desc { font-size: 14px; color: var(--gray-500); line-height: 1.65; }
+    .step-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 16px; padding: 5px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+    .pill-1 { background: rgba(0,102,255,0.07); color: #0066ff; }
+    .pill-2 { background: rgba(0,200,150,0.07); color: #00a87a; }
+    .pill-3 { background: rgba(245,166,35,0.07); color: #c98700; }
+
+    /* ─── Bento Features ─────────────────────────────────────────── */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 16px;
+    }
+    .bento-card {
+      background: #fff; border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 32px;
+      transition: var(--transition); position: relative; overflow: hidden;
+    }
+    .bento-card:hover {
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-color: transparent;
+      transform: translateY(-4px);
+    }
+    .bento-wide { grid-column: span 2; }
+    .bento-tall { grid-row: span 2; }
+    .bento-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .bento-title { font-size: 18px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 8px; }
+    .bento-desc { font-size: 14px; color: var(--gray-500); line-height: 1.65; }
+    .bento-preview {
+      margin-top: 24px;
+      background: var(--gray-50); border-radius: 12px; padding: 16px;
+      border: 1px solid var(--gray-100);
+    }
+    .bento-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .bento-bar-row:last-child { margin-bottom: 0; }
+    .bento-bar-label { font-size: 12px; font-weight: 600; color: var(--gray-700); width: 72px; flex-shrink: 0; }
+    .bento-bar-track { flex: 1; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+    .bento-bar-fill { height: 100%; border-radius: 3px; }
+    .bento-bar-val { font-size: 11px; font-weight: 700; color: var(--gray-700); width: 28px; text-align: right; flex-shrink: 0; }
+    .bento-score-big {
+      font-size: 64px; font-weight: 900; letter-spacing: -3px; line-height: 1;
+      background: linear-gradient(135deg, #0066ff, #00c896);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      margin: 16px 0 4px;
+    }
+    .bento-score-sub { font-size: 13px; color: var(--gray-500); }
+    .bento-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .bento-tag {
+      padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    }
+    .bento-cal-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+    .bento-cal-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .bento-cal-name { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+    .bento-cal-val { font-size: 13px; font-weight: 700; }
+    .bento-wave {
+      margin-top: 20px;
+      display: flex; align-items: flex-end; gap: 4px; height: 48px;
+    }
+    .bento-wave-bar {
+      flex: 1; border-radius: 3px 3px 0 0;
+      background: linear-gradient(to top, #8250ff, rgba(130,80,255,0.3));
+      transform-origin: bottom;
+      animation: waveBar 2s ease-in-out infinite;
+    }
+    @keyframes waveBar {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.6); }
+    }
+
+    /* ─── Testimonials ────────────────────────────────────────────── */
+    #testimonials {
+      background: var(--gray-50);
+    }
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .testi-card {
+      background: #fff; border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 28px;
+      transition: var(--transition); position: relative;
+    }
+    .testi-card:hover {
+      box-shadow: 0 16px 48px rgba(0,0,0,0.08); border-color: transparent;
+      transform: translateY(-4px);
+    }
+    .testi-stars { display: flex; gap: 3px; margin-bottom: 16px; }
+    .testi-star { color: #f5a623; font-size: 14px; }
+    .testi-quote {
+      font-size: 15px; color: #0a0a0a; line-height: 1.7; font-weight: 450;
+      margin-bottom: 20px; position: relative;
+    }
+    .testi-quote::before {
+      content: '\201C';
+      font-size: 48px; line-height: 0.8;
+      color: rgba(0,102,255,0.12);
+      font-weight: 900;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .testi-name { font-size: 14px; font-weight: 700; color: #0a0a0a; }
+    .testi-handle { font-size: 12px; color: var(--gray-500); }
+    .testi-badge {
+      position: absolute; top: 20px; right: 20px;
+      font-size: 10px; font-weight: 700; padding: 3px 8px;
+      border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge-early { background: rgba(0,102,255,0.08); color: #0066ff; }
+    .badge-beta  { background: rgba(0,200,150,0.08); color: #00a87a; }
+    .badge-wait  { background: rgba(245,166,35,0.08); color: #c98700; }
+    .waitlist-cta {
+      margin-top: 56px; text-align: center;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      border-radius: var(--radius-xl); padding: 56px 48px;
+      position: relative; overflow: hidden;
+    }
+    .waitlist-cta::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 240px; height: 240px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,102,255,0.2), transparent 70%);
+      pointer-events: none;
+    }
+    .waitlist-cta::after {
+      content: '';
+      position: absolute; bottom: -80px; left: -60px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,200,150,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .wl-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);
+      margin-bottom: 20px; letter-spacing: 0.5px;
+    }
+    .wl-dot { width: 6px; height: 6px; border-radius: 50%; background: #00c896; animation: pulse 2s infinite; }
+    .wl-title {
+      font-size: clamp(26px, 4vw, 40px); font-weight: 900;
+      letter-spacing: -1.5px; color: #fff; margin-bottom: 12px; line-height: 1.1;
+      position: relative; z-index: 1;
+    }
+    .wl-sub { font-size: 16px; color: rgba(255,255,255,0.5); margin-bottom: 32px; position: relative; z-index: 1; }
+    .wl-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; color: #0a0a0a;
+      padding: 14px 32px; border-radius: 30px;
+      font-size: 15px; font-weight: 700; text-decoration: none;
+      transition: var(--transition); position: relative; z-index: 1;
+    }
+    .wl-btn:hover { background: #e8e8e8; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,255,255,0.15); }
+    .wl-hint { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 12px; position: relative; z-index: 1; }
+
     /* ─── Vision ──────────────────────────────────────────────────── */
     #vision {
       background: #0a0a0a; color: #fff;
@@ -918,45 +1214,6 @@
       font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
     }
     .vision-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: #0066ff; }
-
-    /* ─── Waitlist ────────────────────────────────────────────────── */
-    #waitlist { background: var(--gray-50); }
-    .waitlist-box {
-      max-width: 560px; margin: 0 auto; text-align: center;
-    }
-    .waitlist-title {
-      font-size: clamp(26px, 3.5vw, 40px); font-weight: 900;
-      letter-spacing: -1.2px; margin-bottom: 14px; line-height: 1.1;
-    }
-    .waitlist-sub { font-size: 16px; color: var(--gray-500); margin-bottom: 36px; line-height: 1.6; }
-    .waitlist-form {
-      display: flex; gap: 10px; max-width: 440px; margin: 0 auto 20px;
-    }
-    .waitlist-input {
-      flex: 1; padding: 14px 20px; border-radius: 30px;
-      border: 1.5px solid var(--gray-200); background: #fff;
-      font-size: 15px; font-family: inherit; color: #0a0a0a;
-      outline: none; transition: var(--transition);
-    }
-    .waitlist-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 4px var(--accent-glow); }
-    .waitlist-input::placeholder { color: var(--gray-500); }
-    .waitlist-note { font-size: 13px; color: var(--gray-500); }
-    .waitlist-count {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: #fff; border: 1px solid var(--gray-200);
-      padding: 8px 16px; border-radius: 30px; margin-bottom: 28px;
-      font-size: 13px; font-weight: 600; color: var(--gray-700);
-    }
-    .count-avatars { display: flex; }
-    .count-avatar {
-      width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff;
-      margin-left: -6px; background: var(--gray-200); overflow: hidden;
-      display: flex; align-items: center; justify-content: center; font-size: 10px;
-    }
-    .count-avatar:first-child { margin-left: 0; }
-    .ca-1 { background: #0066ff; color: #fff; }
-    .ca-2 { background: #00c896; color: #fff; }
-    .ca-3 { background: #f5a623; color: #fff; }
 
     /* ─── Footer ──────────────────────────────────────────────────── */
     footer {
@@ -996,11 +1253,16 @@
       .preview-phones { gap: 10px; }
       .preview-phone.side { display: none; }
       .preview-phone.center { transform: none; }
+      .stats-inner { grid-template-columns: 1fr 1fr; }
+      .bento-grid { grid-template-columns: 1fr 1fr; }
+      .bento-wide { grid-column: span 2; }
+      .testimonials-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 600px) {
       section { padding: 70px 0; }
       .features-grid { grid-template-columns: 1fr; }
-      .waitlist-form { flex-direction: column; }
+      .nav-links { gap: 6px; }
+      .nav-link { padding: 6px 10px; font-size: 12px; }
       .nav-logo-img { height: 40px; }
       .phone-badge-2 { display: none; }
       .hero-h1 { letter-spacing: -1.5px; }
@@ -1013,22 +1275,30 @@
 </head>
 <body>
 
-<!-- ─── Animated Background ───────────────────────────────────── -->
+<!-- ─── Animated Dot Grid ────────────────────────────────────── -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ─── Animated Aurora Orbs ────────────────────────────────── -->
 <div class="bg-mesh">
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
   <div class="orb orb-4"></div>
+  <div class="orb orb-5"></div>
 </div>
 
 <!-- ─── Navbar ─────────────────────────────────────────────────── -->
 <nav id="navbar">
   <div class="nav-inner">
-    <a href="#" class="nav-logo">
-      <img src="logo.png" alt="MuscleAPP" class="nav-logo-img" />
+    <a href="index.html" class="nav-logo">
+      <img src="logo.png.png" alt="MuscleAPP" class="nav-logo-img" />
     </a>
-    <div class="nav-badge">In Development</div>
-    <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="privacy.html" class="nav-link">Privacy</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="waitlist.html" class="nav-link">Waitlist</a>
+    </div>
   </div>
 </nav>
 
@@ -1050,9 +1320,9 @@
           AI-powered body scanning that detects muscle mass, fat distribution, and weak points, then builds your perfect training plan.
         </p>
         <div class="hero-actions reveal reveal-delay-3">
-          <a href="#waitlist" class="btn-primary">
+          <a href="contact.html" class="btn-primary">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" fill="white" opacity="0.8"/><circle cx="7" cy="7" r="6" stroke="white" stroke-width="1.5"/></svg>
-            Coming Soon
+            Contact Us
           </a>
           <a href="#how-it-works" class="btn-secondary">
             See How It Works
@@ -1240,6 +1510,32 @@
   </div>
 </section>
 
+<!-- ─── Stats Strip ─────────────────────────────────────────────── -->
+<section id="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-block sb-blue reveal">
+      <div class="stat-block-sup">AI Accuracy</div>
+      <div class="stat-big">84<span class="stat-big-accent">%</span></div>
+      <div class="stat-block-label">Muscle detection accuracy on first prototype</div>
+    </div>
+    <div class="stat-block sb-green reveal reveal-delay-1">
+      <div class="stat-block-sup">Scan Speed</div>
+      <div class="stat-big">0.3<span class="stat-big-accent">s</span></div>
+      <div class="stat-block-label">Average AI body analysis time per photo</div>
+    </div>
+    <div class="stat-block sb-orange reveal reveal-delay-2">
+      <div class="stat-block-sup">Data Points</div>
+      <div class="stat-big">2.4<span class="stat-big-accent">k+</span></div>
+      <div class="stat-block-label">Labelled training images in our dataset</div>
+    </div>
+    <div class="stat-block sb-purple reveal reveal-delay-3">
+      <div class="stat-block-sup">Muscle Groups</div>
+      <div class="stat-big">12<span class="stat-big-accent">+</span></div>
+      <div class="stat-block-label">Tracked muscle groups per full-body scan</div>
+    </div>
+  </div>
+</section>
+
 <!-- ─── Dev Log ───────────────────────────────────────────────── -->
 <section id="dev-log">
   <div class="container">
@@ -1256,7 +1552,7 @@
         <div class="dev-log-card">
           <span class="dev-log-tag tag-ui">UI</span>
           <div class="dev-log-name">Landing page launched</div>
-          <div class="dev-log-desc">Full showcase page live with animated hero, phone mockup, waitlist integration, and premium dark navbar.</div>
+          <div class="dev-log-desc">Full showcase page live with animated hero, phone mockup, polished navigation, and premium dark navbar.</div>
         </div>
       </div>
 
@@ -1619,6 +1915,65 @@
   </div>
 </section>
 
+<!-- ─── Testimonials ─────────────────────────────────────────────── -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">Early Feedback</span>
+      <h2 class="section-title reveal reveal-delay-1">What early testers are saying</h2>
+      <p class="section-sub reveal reveal-delay-2">We're in active development and sharing early access with a select group. Here's their first impressions.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal">
+        <span class="testi-badge badge-early">Early Access</span>
+        <div class="testi-stars"><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span></div>
+        <div class="testi-quote">I've used every fitness app out there. This is the first one that actually looked at MY body and told me what was holding me back. My shoulders were the weak link. The app caught it immediately.</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#0066ff,#4d94ff)">JM</div>
+          <div>
+            <div class="testi-name">James M.</div>
+            <div class="testi-handle">Gym enthusiast · 3 years lifting</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-1">
+        <span class="testi-badge badge-beta">Beta Tester</span>
+        <div class="testi-stars"><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span></div>
+        <div class="testi-quote">The body scan took literally 0.3 seconds. I expected it to be rough, but it wasn't. The muscle group breakdown was shockingly accurate compared to my DEXA scan results.</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#00c896,#00f0b0)">SR</div>
+          <div>
+            <div class="testi-name">Sofia R.</div>
+            <div class="testi-handle">Personal trainer · Competitive athlete</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <span class="testi-badge badge-wait">Waitlist</span>
+        <div class="testi-stars"><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span></div>
+        <div class="testi-quote">Been waiting for something like this. Generic apps tell everyone the same thing. MuscleAPP actually builds a plan around my specific body. It's the difference between guessing and knowing.</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#f5a623,#ffcc66)">DK</div>
+          <div>
+            <div class="testi-name">Daniel K.</div>
+            <div class="testi-handle">Home gym · Intermediate lifter</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="waitlist-cta reveal">
+      <div class="wl-eyebrow"><div class="wl-dot"></div>Limited Early Access</div>
+      <h3 class="wl-title">Be first to train smarter.</h3>
+      <p class="wl-sub">Join the waitlist and get early access when we launch. No spam, ever.</p>
+      <a href="waitlist.html" class="wl-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 4l4 4-4 4" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Get Early Access
+      </a>
+      <p class="wl-hint">Join 200+ people already on the waitlist</p>
+    </div>
+  </div>
+</section>
+
 <!-- ─── Vision ─────────────────────────────────────────────────── -->
 <section id="vision">
   <div class="container">
@@ -1637,49 +1992,21 @@
   </div>
 </section>
 
-<!-- ─── Waitlist ────────────────────────────────────────────────── -->
-<section id="waitlist">
-  <div class="container">
-    <div class="waitlist-box">
-      <div class="waitlist-count reveal">
-        <div class="count-avatars">
-          <div class="count-avatar ca-1">D</div>
-          <div class="count-avatar ca-2">M</div>
-          <div class="count-avatar ca-3">J</div>
-        </div>
-        <span>2,400+ people already waiting</span>
-      </div>
-      <h2 class="waitlist-title reveal reveal-delay-1">Be First When We Launch</h2>
-      <p class="waitlist-sub reveal reveal-delay-2">
-        Get early access, exclusive launch pricing, and be the first to experience AI-powered body transformation.
-      </p>
-      <form class="waitlist-form reveal reveal-delay-3" id="mc-form" onsubmit="handleWaitlist(event)">
-        <input class="waitlist-input" type="email" placeholder="Enter your email" id="waitlist-email" name="EMAIL" required autocomplete="email" />
-        <!-- Mailchimp honeypot (anti-bot) -->
-        <div style="position:absolute;left:-5000px" aria-hidden="true">
-          <input type="text" name="b_2cbd06cd6bbc177d0fd2661ec_ec6220c715" tabindex="-1" value="" />
-        </div>
-        <button type="submit" class="btn-primary" id="waitlist-btn">Join Waitlist</button>
-      </form>
-      <p class="waitlist-note reveal reveal-delay-4">No spam, ever. Unsubscribe anytime.</p>
-    </div>
-  </div>
-</section>
-
 <!-- ─── Footer ─────────────────────────────────────────────────── -->
 <footer>
   <div class="footer-main">
     <div class="footer-brand">
       <div class="footer-brand-row">
-        <img src="logo.png" alt="MuscleAPP" class="footer-logo-img" />
+        <img src="logo.png.png" alt="MuscleAPP" class="footer-logo-img" />
         <span class="footer-brand-name">MuscleAPP</span>
       </div>
       <p class="footer-tagline">AI-powered body scanning and personalised fitness coaching.</p>
     </div>
     <div class="footer-links">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Contact</a>
+      <a href="index.html">Home</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="contact.html">Contact</a>
+      <a href="waitlist.html">Waitlist</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -1715,80 +2042,6 @@
     }
   });
 
-  // Mailchimp waitlist form (JSONP)
-  function handleWaitlist(e) {
-    e.preventDefault();
-    const input = document.getElementById('waitlist-email');
-    const btn = document.getElementById('waitlist-btn');
-    const email = input.value;
-
-    if (!email) return;
-
-    // Disable while submitting
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-    input.disabled = true;
-
-    // Build Mailchimp JSONP URL
-    const baseUrl = 'https://gmail.us11.list-manage.com/subscribe/post-json';
-    const params = new URLSearchParams({
-      u: '2cbd06cd6bbc177d0fd2661ec',
-      id: 'ec6220c715',
-      f_id: '00391ae1f0',
-      EMAIL: email,
-      b_2cbd06cd6bbc177d0fd2661ec_ec6220c715: '' // honeypot
-    });
-
-    // Unique JSONP callback name
-    const cbName = 'mc_cb_' + Date.now();
-    window[cbName] = function(resp) {
-      // Clean up
-      delete window[cbName];
-      const script = document.getElementById('mc-jsonp');
-      if (script) script.remove();
-
-      if (resp.result === 'success') {
-        btn.textContent = 'You are on the list!';
-        btn.style.background = '#00c896';
-        btn.style.boxShadow = '0 8px 24px rgba(0,200,150,0.3)';
-        input.value = '';
-        input.placeholder = 'Welcome aboard!';
-      } else {
-        // Already subscribed is still a win
-        if (resp.msg && resp.msg.includes('already subscribed')) {
-          btn.textContent = 'Already on the list!';
-          btn.style.background = '#0066ff';
-          input.value = '';
-        } else {
-          btn.textContent = 'Try again';
-          btn.style.background = '#e53e3e';
-        }
-      }
-
-      setTimeout(() => {
-        btn.textContent = 'Join Waitlist';
-        btn.style.background = '';
-        btn.style.boxShadow = '';
-        input.placeholder = 'Enter your email';
-        input.disabled = false;
-        btn.disabled = false;
-      }, 4000);
-    };
-
-    // Inject JSONP script tag
-    const script = document.createElement('script');
-    script.id = 'mc-jsonp';
-    script.src = baseUrl + '?' + params.toString() + '&c=' + cbName;
-    document.body.appendChild(script);
-
-    // Timeout fallback
-    setTimeout(() => {
-      if (window[cbName]) {
-        window[cbName]({ result: 'error', msg: 'Timeout' });
-      }
-    }, 8000);
-  }
-
   // Stagger scan dots animation
   const dots = document.querySelectorAll('.scan-dot');
   let currentDot = 0;
@@ -1797,6 +2050,57 @@
     currentDot = (currentDot + 1) % dots.length;
     for (let i = 0; i <= currentDot; i++) dots[i].classList.add('active');
   }, 800);
+
+  // ─── Animated dot-grid background ───────────────────────────────
+  (function () {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    const SPACING = 32;
+    const BASE_R  = 1.2;
+    const WAVE_R  = 2.4;
+    const SPEED   = 0.0012;
+    let W, H, cols, rows, t = 0;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      cols = Math.ceil(W / SPACING) + 1;
+      rows = Math.ceil(H / SPACING) + 1;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      t += SPEED;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = c * SPACING;
+          const y = r * SPACING;
+
+          // wave ripple from top-left
+          const dist  = Math.hypot(x - W * 0.35, y - H * 0.3);
+          const wave  = Math.sin(dist * 0.018 - t * 6) * 0.5 + 0.5;
+
+          // secondary ripple from right
+          const dist2 = Math.hypot(x - W * 0.85, y - H * 0.6);
+          const wave2 = Math.sin(dist2 * 0.016 - t * 4.5 + 1.5) * 0.5 + 0.5;
+
+          const combined = wave * 0.6 + wave2 * 0.4;
+          const radius   = BASE_R + combined * (WAVE_R - BASE_R);
+          const alpha    = 0.06 + combined * 0.18;
+
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(99,140,255,${alpha})`;
+          ctx.fill();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
 </script>
 
 </body>

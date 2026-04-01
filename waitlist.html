@@ -480,24 +480,24 @@
         <div class="wl-card-title">Reserve your spot</div>
         <div class="wl-card-sub">Takes 30 seconds. No credit card required.</div>
 
-        <form class="wl-form" id="wl-form" onsubmit="handleSubmit(event)">
+        <form action="https://gmail.us11.list-manage.com/subscribe/post?u=2cbd06cd6bbc177d0fd2661ec&amp;id=ec6220c715&amp;f_id=00221ae1f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="wl-form validate" target="_blank" onsubmit="handleMailchimpSubmit(event)">
           <div class="form-row">
             <div class="form-group">
-              <label for="first-name">First name</label>
-              <input type="text" id="first-name" placeholder="Alex" required />
+              <label for="mce-FNAME">First name</label>
+              <input type="text" id="mce-FNAME" name="FNAME" placeholder="Alex" required />
             </div>
             <div class="form-group">
-              <label for="last-name">Last name</label>
-              <input type="text" id="last-name" placeholder="Johnson" required />
+              <label for="mce-LNAME">Last name</label>
+              <input type="text" id="mce-LNAME" name="LNAME" placeholder="Johnson" required />
             </div>
           </div>
           <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" id="email" placeholder="alex@example.com" required />
+            <label for="mce-EMAIL">Email address</label>
+            <input type="email" id="mce-EMAIL" name="EMAIL" class="required email" placeholder="alex@example.com" required />
           </div>
           <div class="form-group">
-            <label for="goal">Primary fitness goal</label>
-            <select id="goal">
+            <label for="mce-GOAL">Primary fitness goal</label>
+            <select id="mce-GOAL" name="GOAL">
               <option value="" disabled selected>Select your goal…</option>
               <option value="muscle">Build muscle</option>
               <option value="fat">Lose body fat</option>
@@ -507,15 +507,20 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="experience">Experience level</label>
-            <select id="experience">
+            <label for="mce-EXPERIENCE">Experience level</label>
+            <select id="mce-EXPERIENCE" name="EXPERIENCE">
               <option value="" disabled selected>Select experience…</option>
               <option value="beginner">Beginner (0–1 year)</option>
               <option value="intermediate">Intermediate (1–3 years)</option>
               <option value="advanced">Advanced (3+ years)</option>
             </select>
           </div>
-          <button type="submit" class="wl-submit" id="submit-btn">
+          
+          <div aria-hidden="true" style="position: absolute; left: -5000px;">
+            <input type="text" name="b_2cbd06cd6bbc177d0fd2661ec_ec6220c715" tabindex="-1" value="">
+          </div>
+
+          <button type="submit" name="subscribe" class="wl-submit" id="mc-embedded-subscribe">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 4l4 4-4 4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Join the Waitlist
           </button>
@@ -688,19 +693,18 @@
     document.querySelectorAll('.wl-hero .reveal').forEach(el => el.classList.add('visible'));
   });
 
-  // Form submit
-  function handleSubmit(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submit-btn');
-    btn.textContent = 'Joining…';
-    btn.disabled = true;
-    btn.style.opacity = '0.7';
-
+  // Form submit (Mailchimp)
+  function handleMailchimpSubmit(e) {
+    // We purposefully do NOT prevent default, allowing Mailchimp to open its confirmation in a new tab
+    const btn = document.getElementById('mc-embedded-subscribe');
+    btn.textContent = 'Submitting...';
+    
+    // Switch to success UI locally so the user knows it completed
     setTimeout(() => {
-      document.getElementById('wl-form').style.display = 'none';
+      document.getElementById('mc-embedded-subscribe-form').style.display = 'none';
       const success = document.getElementById('wl-success');
       success.style.display = 'flex';
-    }, 900);
+    }, 800);
   }
 </script>
 
